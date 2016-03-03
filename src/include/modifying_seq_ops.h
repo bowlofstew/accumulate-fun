@@ -7,7 +7,9 @@
 #include <utility>
 
 // ---------------------------------------------------------------------------
-// modifying sequence operations
+// 29 modifying sequence operations
+// (random_shuffle omitted)
+//
 // copy
 // copy_if
 // copy_n
@@ -37,6 +39,7 @@
 // shuffle
 // unique
 // unique_copy
+//
 
 namespace acc
 {

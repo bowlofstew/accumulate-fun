@@ -8,7 +8,8 @@
 #include <utility>
 
 // ---------------------------------------------------------------------------
-// minimum/maximum operations
+// 10 minimum/maximum operations
+//
 // max
 // max_element
 // min
@@ -19,6 +20,7 @@
 // is_permutation
 // next_permutation
 // prev_permutation
+//
 
 namespace acc
 {

@@ -122,6 +122,44 @@ DEF_PROPERTY(NotEqual2Lengths, NonModifyingSeqOps, const vector<unsigned int>& v
     && !acc::equal(v.cbegin(), v.cend()-1, v.cbegin(), v.cend(), equal_to<>());
 }
 
+DEF_PROPERTY(FindEndEmpty, NonModifyingSeqOps, const vector<unsigned int>& v)
+{
+  vector<unsigned int> s;
+  auto x = find_end(v.cbegin(), v.cend(), s.cbegin(), s.cend(), equal_to<>());
+  auto y = acc::find_end(v.cbegin(), v.cend(), s.cbegin(), s.cend(), equal_to<>());
+  return x == y;
+}
+
+DEF_PROPERTY(FindEndFull, NonModifyingSeqOps, const vector<unsigned int>& v)
+{
+  auto x = find_end(v.cbegin(), v.cend(), v.cbegin(), v.cend(), equal_to<>());
+  auto y = acc::find_end(v.cbegin(), v.cend(), v.cbegin(), v.cend(), equal_to<>());
+  return x == y;
+}
+
+DEF_PROPERTY(FindEndNotFound, NonModifyingSeqOps, const vector<unsigned int>& v)
+{
+  if (v.empty()) return true;
+  unsigned int i = v[0] + 1;
+  while (find(v.cbegin(), v.cend(), i) != v.end()) ++i;
+  unsigned int* pi = &i;
+
+  auto x = find_end(v.cbegin(), v.cend(), pi, pi+1, equal_to<>());
+  auto y = acc::find_end(v.cbegin(), v.cend(), pi, pi+1, equal_to<>());
+  return x == y;
+}
+
+DEF_PROPERTY(FindEndFound, NonModifyingSeqOps, vector<unsigned int> v)
+{
+  if (v.size() < 3) return true;
+  v[2] = v[0];
+  unsigned int* pi = &v[0];
+
+  auto x = find_end(v.cbegin(), v.cend(), pi, pi+1, equal_to<>());
+  auto y = acc::find_end(v.cbegin(), v.cend(), pi, pi+1, equal_to<>());
+  return x == y;
+}
+
 DEF_PROPERTY(FindFirstOf, NonModifyingSeqOps, const vector<unsigned int>& v)
 {
   if (v.size() < 3) return true;

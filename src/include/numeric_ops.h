@@ -6,12 +6,14 @@
 #include <utility>
 
 // ---------------------------------------------------------------------------
-// numeric operations
+// 4 numeric operations
+// (accumulate itself omitted)
+//
 // iota
-// accumulate
 // inner_product
 // adjacent_difference
 // partial_sum
+//
 
 namespace acc
 {

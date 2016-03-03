@@ -6,7 +6,7 @@
 #include <utility>
 
 // ---------------------------------------------------------------------------
-// non-modifying sequence operations
+// 16 non-modifying sequence operations
 //
 // find
 // find_if
@@ -248,7 +248,21 @@ namespace acc
   }
 
   // ---------------------------------------------------------------------------
-  // find_end - TBD
+  // find_end
+
+  template <typename ForwardIt1, typename ForwardIt2, typename BinaryPredicate>
+  ForwardIt1 find_end(ForwardIt1 first, ForwardIt1 last,
+                      ForwardIt2 s_first, ForwardIt2 s_last,
+                      BinaryPredicate p)
+  {
+    if (s_first == s_last) return last;
+    return acc::accumulate_iter(
+        first, last, last,
+        [&] (ForwardIt1 l, ForwardIt1 i) {
+          if (acc::mismatch(i, last, s_first, s_last, p).second == s_last) return i;
+          return l;
+        });
+  }
 
   // ---------------------------------------------------------------------------
   // find_first_of
