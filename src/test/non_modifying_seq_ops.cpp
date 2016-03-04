@@ -23,7 +23,7 @@ DEF_PROPERTY(ForEach, NonModifyingSeqOps, const vector<unsigned int>& v)
 DEF_PROPERTY(Find, NonModifyingSeqOps, const vector<unsigned int>& v)
 {
   unsigned int e = 0;
-  if (v.size() > 0) e = v[v.size()/2];
+  if (!v.empty()) e = v[v.size()/2];
 
   auto x = find(v.cbegin(), v.cend(), e);
   auto y = acc::find(v.cbegin(), v.cend(), e);
@@ -49,7 +49,7 @@ DEF_PROPERTY(FindIfNot, NonModifyingSeqOps, const vector<unsigned int>& v)
 DEF_PROPERTY(Mismatch, NonModifyingSeqOps, const vector<unsigned int>& v)
 {
   auto w = v;
-  if (w.size() > 0) ++w[w.size()/2];
+  if (!w.empty()) ++w[w.size()/2];
 
   auto x = mismatch(v.cbegin(), v.cend(), w.cbegin(), equal_to<>());
   auto y = acc::mismatch(v.cbegin(), v.cend(), w.cbegin(), equal_to<>());
