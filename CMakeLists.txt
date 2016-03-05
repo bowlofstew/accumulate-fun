@@ -43,7 +43,7 @@ else()
     # -Wshadow
     # -Wsign-conversion
     -Wsign-promo
-    -Wstrict-overflow=5
+    -Wstrict-overflow=2
     -Wswitch-default
     -Wundef
     )
