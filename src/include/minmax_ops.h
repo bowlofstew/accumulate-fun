@@ -2,7 +2,10 @@
 
 #include "accumulate.h"
 
+#ifndef _MSC_VER
 #include <experimental/optional>
+#endif
+
 #include <initializer_list>
 #include <iterator>
 #include <utility>
@@ -90,8 +93,11 @@ namespace acc
     return { *p.first, *p.second };
   }
 
+#ifndef _MSC_VER
+
   // ---------------------------------------------------------------------------
   // min_element (safe value form)
+
   template <typename InputIt, typename Compare>
   std::experimental::optional<typename std::iterator_traits<InputIt>::value_type>
   min_element_safe(InputIt first, InputIt last, Compare cmp)
@@ -109,6 +115,7 @@ namespace acc
 
   // ---------------------------------------------------------------------------
   // max_element (safe value form)
+
   template <typename InputIt, typename Compare>
   std::experimental::optional<typename std::iterator_traits<InputIt>::value_type>
   max_element_safe(InputIt first, InputIt last, Compare cmp)
@@ -126,6 +133,7 @@ namespace acc
 
   // ---------------------------------------------------------------------------
   // minmax_element (safe value form)
+
   template <typename InputIt, typename Compare>
   std::experimental::optional<
     std::pair<typename std::iterator_traits<InputIt>::value_type,
@@ -144,6 +152,35 @@ namespace acc
             auto& s = cmp(a.second, b) ? b : a.second;
             return { f, s };
           }) };
+  }
+
+#endif
+
+  // ---------------------------------------------------------------------------
+  // lexicographical_compare
+
+  template <typename InputIt1, typename InputIt2, typename Compare>
+  bool lexicographical_compare(InputIt1 first1, InputIt1 last1,
+                               InputIt2 first2, InputIt2 last2,
+                               Compare cmp)
+  {
+    using T = typename std::iterator_traits<InputIt1>::value_type;
+    using P = std::pair<bool, InputIt2>;
+    try
+    {
+     return acc::accumulate(
+         first1, last1, P{ false, first2 },
+         [&] (P a, const T& b) {
+           if (a.second == last2 || cmp(*a.second, b)) throw false;
+           if (cmp(b, *a.second)) throw true;
+            auto next = ++a.second;
+            return P{ next != last2, next };
+         }).first;
+    }
+    catch (bool b)
+    {
+      return b;
+    }
   }
 
 }
