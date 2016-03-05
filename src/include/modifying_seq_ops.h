@@ -4,11 +4,12 @@
 
 #include <iterator>
 #include <functional>
+#include <random>
 #include <utility>
 
 // ---------------------------------------------------------------------------
-// 29 modifying sequence operations
-// (random_shuffle omitted)
+// 27 modifying sequence operations
+// (iter_swap, swap, random_shuffle omitted)
 //
 // copy
 // copy_if
@@ -29,9 +30,7 @@
 // replace_if
 // replace_copy
 // replace_copy_if
-// swap
 // swap_ranges
-// iter_swap
 // reverse
 // reverse_copy
 // rotate
@@ -325,16 +324,6 @@ namespace acc
   }
 
   // ---------------------------------------------------------------------------
-  // iter_swap
-
-  template<class ForwardIt1, class ForwardIt2>
-  void iter_swap(ForwardIt1 a, ForwardIt2 b)
-  {
-    using std::swap;
-    swap(*a, *b);
-  }
-
-  // ---------------------------------------------------------------------------
   // swap_ranges
 
   template <typename ForwardIt1, typename ForwardIt2>
@@ -344,10 +333,13 @@ namespace acc
     return acc::accumulate_iter(
         first1, last1, first2,
         [&] (ForwardIt2 a, ForwardIt1 b) {
-          acc::iter_swap(a, b);
+          std::iter_swap(a, b);
           return ++a;
         });
   }
+
+  // ---------------------------------------------------------------------------
+  // reverse
 
   // ---------------------------------------------------------------------------
   // reverse_copy
@@ -364,6 +356,57 @@ namespace acc
             *d = b;
             return a(++d); };
         })(d_first);
+  }
+
+  // ---------------------------------------------------------------------------
+  // rotate and rotate_copy
+
+  // ---------------------------------------------------------------------------
+  // shuffle
+
+  template <typename RandomIt, typename URNG>
+  void shuffle(RandomIt first, RandomIt last, URNG&& g)
+  {
+    using diff_t = typename std::iterator_traits<RandomIt>::difference_type;
+    using udiff_t = typename std::make_unsigned<diff_t>::type;
+    using distr_t = typename std::uniform_int_distribution<udiff_t>;
+    using param_t = typename distr_t::param_type;
+
+    distr_t D;
+    udiff_t d = last - first - 1;
+    acc::accumulate_iter(
+        first, last, d,
+        [&] (udiff_t d, RandomIt i) {
+          RandomIt r = i + D(g, param_t{0, d});
+          std::iter_swap(i, r);
+          return --d;
+        });
+  }
+
+  // ---------------------------------------------------------------------------
+  // unique and unique_copy
+
+  template <typename InputIt, typename OutputIt, typename BinaryPredicate>
+  OutputIt unique_copy(InputIt first, InputIt last,
+                       OutputIt d_first, BinaryPredicate p)
+  {
+    using U = typename std::iterator_traits<InputIt>::value_type;
+    using P = std::pair<OutputIt, U>;
+    if (first == last) return d_first;
+    U init = *first;
+    *d_first = init;
+    return acc::accumulate(
+        ++first, last, P{ ++d_first, std::move(init) },
+        [&] (P a, const U& b) {
+          if (!p(a.second, b)) *a.first++ = b;
+          return P{ a.first, b };
+        }).first;
+  }
+
+  template <typename ForwardIt, typename BinaryPredicate>
+  ForwardIt unique(ForwardIt first, ForwardIt last, BinaryPredicate p)
+  {
+    return acc::unique_copy(first, last, first, p);
   }
 
 }

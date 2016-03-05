@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8)
-project (accumulate-experiments)
+project (accumulate-fun)
 
 # Includes for this project
 include_directories ("${PROJECT_SOURCE_DIR}/src/include")

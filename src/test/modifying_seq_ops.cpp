@@ -234,3 +234,36 @@ DEF_PROPERTY(ReverseCopy, ModifyingSeqOps, const vector<unsigned int>& v)
   return sx == outx.size() && sy == outy.size()
     && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
 }
+
+DEF_PROPERTY(Unique, ModifyingSeqOps, vector<unsigned int> v)
+{
+  if (v.size() > 5)
+  {
+    v[1] = v[0];
+    v[5] = v[4] = v[3];
+  }
+  vector<unsigned int> w{v};
+
+  auto x = unique(v.begin(), v.end(), std::equal_to<>());
+  auto y = acc::unique(w.begin(), w.end(), std::equal_to<>());
+
+  using ST = typename vector<unsigned int>::size_type;
+  auto sx = static_cast<ST>(x - v.begin());
+  auto sy = static_cast<ST>(y - w.begin());
+
+  return sx == sy
+    && equal(v.begin(), x, w.begin(), y);
+}
+
+DEF_PROPERTY(Shuffle, ModifyingSeqOps, const vector<unsigned int>& v)
+{
+  vector<unsigned int> w{v};
+
+  std::random_device rd;
+  std::mt19937 g(rd());
+  acc::shuffle(w.begin(), w.end(), g);
+
+  bool b = is_permutation(v.cbegin(), v.cend(), w.cbegin());
+
+  return b && (v.empty() || w != v);
+}
