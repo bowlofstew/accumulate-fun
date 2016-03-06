@@ -2,9 +2,6 @@
 
 #include "accumulate.h"
 
-#include <iterator>
-#include <utility>
-
 // ---------------------------------------------------------------------------
 // 5 partitioning operations
 //
