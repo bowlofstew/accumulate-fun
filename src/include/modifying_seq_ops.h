@@ -339,8 +339,23 @@ namespace acc
   }
 
   // ---------------------------------------------------------------------------
-  // reverse?
+  // reverse
 
+  template<class BidirIt>
+  void reverse(BidirIt first, BidirIt last)
+  {
+    using diff_t = typename std::iterator_traits<BidirIt>::difference_type;
+    diff_t d = std::distance(first, last) / 2;
+    BidirIt mid = first;
+    std::advance(mid, d);
+    acc::accumulate_iter(
+        first, mid, last,
+        [] (BidirIt a, BidirIt b) {
+          std::iter_swap(--a, b);
+          return a;
+        });
+  }
+  
   // ---------------------------------------------------------------------------
   // reverse_copy
 
@@ -359,7 +374,18 @@ namespace acc
   }
 
   // ---------------------------------------------------------------------------
-  // rotate and rotate_copy?
+  // rotate?
+
+  // ---------------------------------------------------------------------------
+  // rotate_copy
+
+  template <typename ForwardIt, typename OutputIt>
+  OutputIt rotate_copy(ForwardIt first, ForwardIt n_first,
+                       ForwardIt last, OutputIt d_first)
+  {
+    d_first = acc::copy(n_first, last, d_first);
+    return acc::copy(first, n_first, d_first);
+  }
 
   // ---------------------------------------------------------------------------
   // shuffle

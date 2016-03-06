@@ -219,6 +219,17 @@ DEF_PROPERTY(Transform2, ModifyingSeqOps, const vector<unsigned int>& v)
     && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
 }
 
+DEF_PROPERTY(Reverse, ModifyingSeqOps, const vector<unsigned int>& v)
+{
+  vector<unsigned int> outx(v);
+  reverse(outx.begin(), outx.end());
+
+  vector<unsigned int> outy(v);
+  acc::reverse(outy.begin(), outy.end());
+
+  return outx == outy;
+}
+
 DEF_PROPERTY(ReverseCopy, ModifyingSeqOps, const vector<unsigned int>& v)
 {
   vector<unsigned int> outx(v.size(), 0);
@@ -226,6 +237,33 @@ DEF_PROPERTY(ReverseCopy, ModifyingSeqOps, const vector<unsigned int>& v)
 
   vector<unsigned int> outy(v.size(), 0);
   auto y = acc::reverse_copy(v.cbegin(), v.cend(), outy.data());
+
+  using ST = typename vector<unsigned int>::size_type;
+  auto sx = static_cast<ST>(x - outx.data());
+  auto sy = static_cast<ST>(y - outy.data());
+
+  return sx == outx.size() && sy == outy.size()
+    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+}
+
+DEF_PROPERTY(RotateCopy, ModifyingSeqOps, const vector<unsigned int>& v)
+{
+  using diff_t = typename vector<unsigned int>::iterator::difference_type;
+  using udiff_t = typename std::make_unsigned<diff_t>::type;
+  using distr_t = typename std::uniform_int_distribution<udiff_t>;
+  using param_t = typename distr_t::param_type;
+
+  std::random_device rd;
+  std::mt19937 g(rd());
+  distr_t D;
+  udiff_t d = v.end() - v.begin();
+  auto r = v.begin() + D(g, param_t{0, d});
+
+  vector<unsigned int> outx(v.size(), 0);
+  auto x = rotate_copy(v.cbegin(), r, v.cend(), outx.data());
+
+  vector<unsigned int> outy(v.size(), 0);
+  auto y = acc::rotate_copy(v.cbegin(), r, v.cend(), outy.data());
 
   using ST = typename vector<unsigned int>::size_type;
   auto sx = static_cast<ST>(x - outx.data());
