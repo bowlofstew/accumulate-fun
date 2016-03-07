@@ -21,7 +21,7 @@ namespace acc
   // iota
 
   template <typename ForwardIt, typename T>
-  void iota(ForwardIt first, ForwardIt last, T value)
+  inline void iota(ForwardIt first, ForwardIt last, T value)
   {
     acc::accumulate_iter(
         first, last, value,
@@ -36,9 +36,10 @@ namespace acc
   template <typename InputIt1, typename InputIt2,
             typename T,
             typename BinaryOp1, typename BinaryOp2>
-  T inner_product(InputIt1 first1, InputIt1 last1,
-                  InputIt2 first2, T value,
-                  BinaryOp1 op1, BinaryOp2 op2)
+  inline T inner_product(
+      InputIt1 first1, InputIt1 last1,
+      InputIt2 first2, T value,
+      BinaryOp1 op1, BinaryOp2 op2)
   {
     using U = typename std::iterator_traits<InputIt1>::value_type;
     return acc::accumulate(
@@ -52,8 +53,9 @@ namespace acc
   // adjacent_difference
 
   template <typename InputIt, typename OutputIt, typename BinaryOperation>
-  OutputIt adjacent_difference(InputIt first, InputIt last,
-                               OutputIt d_first, BinaryOperation op)
+  inline OutputIt adjacent_difference(
+      InputIt first, InputIt last,
+      OutputIt d_first, BinaryOperation op)
   {
     if (first == last) return d_first;
     using T = typename std::iterator_traits<InputIt>::value_type;
@@ -72,8 +74,9 @@ namespace acc
   // partial_sum
 
   template <typename InputIt, typename OutputIt, typename BinaryOperation>
-  OutputIt partial_sum(InputIt first, InputIt last,
-                       OutputIt d_first, BinaryOperation op)
+  inline OutputIt partial_sum(
+      InputIt first, InputIt last,
+      OutputIt d_first, BinaryOperation op)
   {
     if (first == last) return d_first;
     using T = typename std::iterator_traits<InputIt>::value_type;

@@ -6,7 +6,8 @@ namespace acc
   // ---------------------------------------------------------------------------
   // accumulate (ordinary value form)
   template <typename InputIt, typename T, typename BinaryOperation>
-  auto accumulate(InputIt first, InputIt last, T init, BinaryOperation op)
+  inline auto accumulate(
+      InputIt first, InputIt last, T init, BinaryOperation op)
   {
     for (; first != last; ++first) {
       init = op(init, *first);
@@ -17,7 +18,8 @@ namespace acc
   // ---------------------------------------------------------------------------
   // accumulate (iterator form)
   template <typename InputIt, typename T, typename BinaryOperation>
-  auto accumulate_iter(InputIt first, InputIt last, T init, BinaryOperation op)
+  inline auto accumulate_iter(
+      InputIt first, InputIt last, T init, BinaryOperation op)
   {
     for (; first != last; ++first) {
       init = op(init, first);

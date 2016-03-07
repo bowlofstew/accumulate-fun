@@ -32,7 +32,8 @@ namespace acc
   // min_element
 
   template <typename ForwardIt, typename Compare>
-  ForwardIt min_element(ForwardIt first, ForwardIt last, Compare cmp)
+  inline ForwardIt min_element(
+      ForwardIt first, ForwardIt last, Compare cmp)
   {
     return acc::accumulate_iter(
         first, last, first,
@@ -45,7 +46,8 @@ namespace acc
   // max_element
 
   template <typename ForwardIt, typename Compare>
-  ForwardIt max_element(ForwardIt first, ForwardIt last, Compare cmp)
+  inline ForwardIt max_element(
+      ForwardIt first, ForwardIt last, Compare cmp)
   {
     return acc::accumulate_iter(
         first, last, first,
@@ -58,8 +60,8 @@ namespace acc
   // minmax_element
 
   template <typename ForwardIt, typename Compare>
-  std::pair<ForwardIt, ForwardIt>
-  minmax_element(ForwardIt first, ForwardIt last, Compare cmp)
+  inline std::pair<ForwardIt, ForwardIt> minmax_element(
+      ForwardIt first, ForwardIt last, Compare cmp)
   {
     using P = std::pair<ForwardIt, ForwardIt>;
     return acc::accumulate_iter(
@@ -75,19 +77,20 @@ namespace acc
   // min, max, minmax (initializer_list forms)
 
   template <typename T, typename Compare>
-  T min(std::initializer_list<T> ilist, Compare cmp)
+  inline T min(std::initializer_list<T> ilist, Compare cmp)
   {
     return *acc::min_element(ilist.begin(), ilist.end(), cmp);
   }
 
   template <typename T, typename Compare>
-  T max(std::initializer_list<T> ilist, Compare cmp)
+  inline T max(std::initializer_list<T> ilist, Compare cmp)
   {
     return *acc::max_element(ilist.begin(), ilist.end(), cmp);
   }
 
   template <typename T, typename Compare>
-  std::pair<T, T> minmax(std::initializer_list<T> ilist, Compare cmp)
+  inline std::pair<T, T> minmax(
+      std::initializer_list<T> ilist, Compare cmp)
   {
     auto p = acc::minmax_element(ilist.begin(), ilist.end(), cmp);
     return { *p.first, *p.second };
@@ -99,7 +102,8 @@ namespace acc
   // min_element (safe value form)
 
   template <typename InputIt, typename Compare>
-  std::experimental::optional<typename std::iterator_traits<InputIt>::value_type>
+  inline std::experimental::optional<
+    typename std::iterator_traits<InputIt>::value_type>
   min_element_safe(InputIt first, InputIt last, Compare cmp)
   {
     if (first == last) return std::experimental::nullopt;
@@ -117,7 +121,8 @@ namespace acc
   // max_element (safe value form)
 
   template <typename InputIt, typename Compare>
-  std::experimental::optional<typename std::iterator_traits<InputIt>::value_type>
+  inline std::experimental::optional<
+    typename std::iterator_traits<InputIt>::value_type>
   max_element_safe(InputIt first, InputIt last, Compare cmp)
   {
     if (first == last) return std::experimental::nullopt;
@@ -135,7 +140,7 @@ namespace acc
   // minmax_element (safe value form)
 
   template <typename InputIt, typename Compare>
-  std::experimental::optional<
+  inline std::experimental::optional<
     std::pair<typename std::iterator_traits<InputIt>::value_type,
               typename std::iterator_traits<InputIt>::value_type>>
   minmax_element_safe(InputIt first, InputIt last, Compare cmp)
@@ -160,9 +165,10 @@ namespace acc
   // lexicographical_compare
 
   template <typename InputIt1, typename InputIt2, typename Compare>
-  bool lexicographical_compare(InputIt1 first1, InputIt1 last1,
-                               InputIt2 first2, InputIt2 last2,
-                               Compare cmp)
+  inline bool lexicographical_compare(
+      InputIt1 first1, InputIt1 last1,
+      InputIt2 first2, InputIt2 last2,
+      Compare cmp)
   {
     using T = typename std::iterator_traits<InputIt1>::value_type;
     using P = std::pair<bool, InputIt2>;

@@ -47,8 +47,9 @@ namespace acc
   // copy, copy_if and copy_n
 
   template <typename InputIt, typename OutputIt>
-  OutputIt copy(InputIt first, InputIt last,
-                OutputIt d_first)
+  inline OutputIt copy(
+      InputIt first, InputIt last,
+      OutputIt d_first)
   {
     using T = typename std::iterator_traits<InputIt>::value_type;
     return acc::accumulate(
@@ -60,9 +61,9 @@ namespace acc
   }
 
   template <typename InputIt, typename OutputIt, typename UnaryPredicate>
-  OutputIt copy_if(InputIt first, InputIt last,
-                   OutputIt d_first,
-                   UnaryPredicate p)
+  inline OutputIt copy_if(
+      InputIt first, InputIt last,
+      OutputIt d_first, UnaryPredicate p)
   {
     using T = typename std::iterator_traits<InputIt>::value_type;
     return acc::accumulate(
@@ -77,7 +78,8 @@ namespace acc
   }
 
   template <typename InputIt, typename Size, typename OutputIt>
-  OutputIt copy_n(InputIt first, Size count, OutputIt result)
+  inline OutputIt copy_n(
+      InputIt first, Size count, OutputIt result)
   {
     if (count <= Size{0}) return result;
     using P = std::pair<OutputIt, InputIt>;
@@ -90,11 +92,39 @@ namespace acc
   }
 
   // ---------------------------------------------------------------------------
+  // copy_while - a useful extra algorithm (and a helper for merge)
+
+  template <typename InputIt, typename OutputIt, typename UnaryPredicate>
+  inline std::pair<OutputIt, InputIt> copy_while(
+      InputIt first, InputIt last,
+      OutputIt d_first,
+      UnaryPredicate p)
+  {
+    using P = std::pair<OutputIt, InputIt>;
+    try
+    {
+      OutputIt o = acc::accumulate_iter(
+          first, last, d_first,
+          [&] (OutputIt d, InputIt a) {
+            if (!p(*a)) throw P{ d, a };
+            *d = *a;
+            return ++d;
+          });
+      return P{ o, last };
+    }
+    catch (P& p)
+    {
+      return p;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // copy_backward
 
   template <typename BidirIt1, typename BidirIt2>
-  BidirIt2 copy_backward(BidirIt1 first, BidirIt1 last,
-                         BidirIt2 d_last)
+  inline BidirIt2 copy_backward(
+      BidirIt1 first, BidirIt1 last,
+      BidirIt2 d_last)
   {
     using T = typename std::iterator_traits<BidirIt1>::reference;
     using F = std::function<BidirIt2(BidirIt2)>;
@@ -111,8 +141,9 @@ namespace acc
   // move and move_backward
 
   template <typename InputIt, typename OutputIt>
-  OutputIt move(InputIt first, InputIt last,
-                OutputIt d_first)
+  inline OutputIt move(
+      InputIt first, InputIt last,
+      OutputIt d_first)
   {
     using T = typename std::iterator_traits<InputIt>::value_type;
     return acc::accumulate(
@@ -124,8 +155,9 @@ namespace acc
   }
 
   template <typename BidirIt1, typename BidirIt2>
-  BidirIt2 move_backward(BidirIt1 first, BidirIt1 last,
-                         BidirIt2 d_last)
+  inline BidirIt2 move_backward(
+      BidirIt1 first, BidirIt1 last,
+      BidirIt2 d_last)
   {
     using T = typename std::iterator_traits<BidirIt1>::reference;
     using F = std::function<BidirIt2(BidirIt2)>;
@@ -142,8 +174,9 @@ namespace acc
   // fill and fill_n
 
   template <typename ForwardIt, typename T>
-  void fill(ForwardIt first, ForwardIt last,
-            const T& value)
+  inline void fill(
+      ForwardIt first, ForwardIt last,
+      const T& value)
   {
     acc::accumulate_iter(
         first, last, value,
@@ -154,7 +187,8 @@ namespace acc
   }
 
   template <typename OutputIt, typename Size, typename T>
-  OutputIt fill_n(OutputIt first, Size count, const T& value)
+  inline OutputIt fill_n(
+      OutputIt first, Size count, const T& value)
   {
     if (count <= Size{0}) return first;
     using P = std::pair<OutputIt, const T*>;
@@ -170,8 +204,9 @@ namespace acc
   // transform
 
   template <typename InputIt, typename OutputIt, typename UnaryOperation>
-  OutputIt transform(InputIt first1, InputIt last1, OutputIt d_first,
-                     UnaryOperation unary_op)
+  inline OutputIt transform(
+      InputIt first1, InputIt last1, OutputIt d_first,
+      UnaryOperation unary_op)
   {
     using T = typename std::iterator_traits<InputIt>::value_type;
     return acc::accumulate(
@@ -184,9 +219,10 @@ namespace acc
 
   template <typename InputIt1, typename InputIt2,
             typename OutputIt, typename BinaryOperation>
-  OutputIt transform(InputIt1 first1, InputIt1 last1, InputIt2 first2,
-                     OutputIt d_first,
-                     BinaryOperation binary_op)
+  inline OutputIt transform(
+      InputIt1 first1, InputIt1 last1, InputIt2 first2,
+      OutputIt d_first,
+      BinaryOperation binary_op)
   {
     using T = typename std::iterator_traits<InputIt1>::value_type;
     using P = std::pair<InputIt2, OutputIt>;
@@ -202,7 +238,8 @@ namespace acc
   // generate and generate_n
 
   template <typename ForwardIt, typename Generator>
-  void generate(ForwardIt first, ForwardIt last, Generator g)
+  inline void generate(
+      ForwardIt first, ForwardIt last, Generator g)
   {
     acc::accumulate_iter(
         first, last, &g,
@@ -213,7 +250,8 @@ namespace acc
   }
 
   template <typename OutputIt, typename Size, typename Generator>
-  OutputIt generate_n(OutputIt first, Size count, Generator g)
+  inline OutputIt generate_n(
+      OutputIt first, Size count, Generator g)
   {
     if (count < Size{0}) return first;
     using P = std::pair<OutputIt, Generator*>;
@@ -229,9 +267,9 @@ namespace acc
   // remove_copy and remove_copy_if
 
   template <typename InputIt, typename OutputIt, typename T>
-  OutputIt remove_copy(InputIt first, InputIt last,
-                       OutputIt d_first,
-                       const T& value)
+  inline OutputIt remove_copy(
+      InputIt first, InputIt last,
+      OutputIt d_first, const T& value)
   {
     using U = typename std::iterator_traits<InputIt>::value_type;
     return acc::accumulate(
@@ -244,8 +282,9 @@ namespace acc
   }
 
   template <typename InputIt, typename OutputIt, typename UnaryPredicate>
-  InputIt remove_copy_if(InputIt first, InputIt last,
-                         OutputIt d_first, UnaryPredicate p)
+  inline InputIt remove_copy_if(
+      InputIt first, InputIt last,
+      OutputIt d_first, UnaryPredicate p)
   {
     using T = typename std::iterator_traits<InputIt>::value_type;
     return acc::accumulate(
@@ -261,15 +300,17 @@ namespace acc
   // remove and remove_if
 
   template <typename ForwardIt, typename T>
-  ForwardIt remove(ForwardIt first, ForwardIt last,
-                   const T& value)
+  inline ForwardIt remove(
+      ForwardIt first, ForwardIt last,
+      const T& value)
   {
     return acc::remove_copy(first, last, first, value);
   }
 
   template <typename ForwardIt, typename UnaryPredicate>
-  ForwardIt remove_if(ForwardIt first, ForwardIt last,
-                      UnaryPredicate p)
+  inline ForwardIt remove_if(
+      ForwardIt first, ForwardIt last,
+      UnaryPredicate p)
   {
     return acc::remove_copy_if(first, last, first, p);
   }
@@ -278,9 +319,10 @@ namespace acc
   // replace_copy and replace_copy_if
 
   template <typename InputIt, typename OutputIt, typename T>
-  OutputIt replace_copy(InputIt first, InputIt last,
-                        OutputIt d_first,
-                        const T& old_value, const T& new_value)
+  inline OutputIt replace_copy(
+      InputIt first, InputIt last,
+      OutputIt d_first,
+      const T& old_value, const T& new_value)
   {
     using U = typename std::iterator_traits<InputIt>::value_type;
     return acc::accumulate(
@@ -293,9 +335,10 @@ namespace acc
 
   template <typename InputIt, typename OutputIt,
             typename UnaryPredicate, typename T>
-  InputIt replace_copy_if(InputIt first, InputIt last,
-                          OutputIt d_first, UnaryPredicate p,
-                          const T& new_value)
+  inline InputIt replace_copy_if(
+      InputIt first, InputIt last,
+      OutputIt d_first, UnaryPredicate p,
+      const T& new_value)
   {
     using U = typename std::iterator_traits<InputIt>::value_type;
     return acc::accumulate(
@@ -310,15 +353,17 @@ namespace acc
   // replace and replace_if
 
   template <typename ForwardIt, typename T>
-  void replace(ForwardIt first, ForwardIt last,
-               const T& old_value, const T& new_value)
+  inline void replace(
+      ForwardIt first, ForwardIt last,
+      const T& old_value, const T& new_value)
   {
     acc::replace_copy(first, last, first, old_value, new_value);
   }
 
   template <typename ForwardIt, typename UnaryPredicate, typename T>
-  void replace_if(ForwardIt first, ForwardIt last,
-                  UnaryPredicate p, const T& old_value)
+  inline void replace_if(
+      ForwardIt first, ForwardIt last,
+      UnaryPredicate p, const T& old_value)
   {
     acc::replace_copy_if(first, last, first, p, old_value);
   }
@@ -327,8 +372,9 @@ namespace acc
   // swap_ranges
 
   template <typename ForwardIt1, typename ForwardIt2>
-  ForwardIt2 swap_ranges(ForwardIt1 first1, ForwardIt1 last1,
-                         ForwardIt2 first2)
+  inline ForwardIt2 swap_ranges(
+      ForwardIt1 first1, ForwardIt1 last1,
+      ForwardIt2 first2)
   {
     return acc::accumulate_iter(
         first1, last1, first2,
@@ -342,7 +388,7 @@ namespace acc
   // reverse
 
   template<class BidirIt>
-  void reverse(BidirIt first, BidirIt last)
+  inline void reverse(BidirIt first, BidirIt last)
   {
     using diff_t = typename std::iterator_traits<BidirIt>::difference_type;
     diff_t d = std::distance(first, last) / 2;
@@ -360,7 +406,7 @@ namespace acc
   // reverse_copy
 
   template <typename BidirIt, typename OutputIt>
-  OutputIt reverse_copy(BidirIt first, BidirIt last, OutputIt d_first)
+  inline OutputIt reverse_copy(BidirIt first, BidirIt last, OutputIt d_first)
   {
     using T = typename std::iterator_traits<BidirIt>::reference;
     using F = std::function<OutputIt(OutputIt)>;
@@ -377,7 +423,7 @@ namespace acc
   // rotate
 
   template <class ForwardIt>
-  ForwardIt rotate(ForwardIt first, ForwardIt n_first, ForwardIt last)
+  inline ForwardIt rotate(ForwardIt first, ForwardIt n_first, ForwardIt last)
   {
     if (n_first == last) return last;
     ForwardIt ret = first;
@@ -400,8 +446,9 @@ namespace acc
   // rotate_copy
 
   template <typename ForwardIt, typename OutputIt>
-  OutputIt rotate_copy(ForwardIt first, ForwardIt n_first,
-                       ForwardIt last, OutputIt d_first)
+  inline OutputIt rotate_copy(
+      ForwardIt first, ForwardIt n_first,
+      ForwardIt last, OutputIt d_first)
   {
     d_first = acc::copy(n_first, last, d_first);
     return acc::copy(first, n_first, d_first);
@@ -411,7 +458,7 @@ namespace acc
   // shuffle
 
   template <typename RandomIt, typename URNG>
-  void shuffle(RandomIt first, RandomIt last, URNG&& g)
+  inline void shuffle(RandomIt first, RandomIt last, URNG&& g)
   {
     using diff_t = typename std::iterator_traits<RandomIt>::difference_type;
     using udiff_t = typename std::make_unsigned<diff_t>::type;
@@ -433,8 +480,9 @@ namespace acc
   // unique and unique_copy
 
   template <typename InputIt, typename OutputIt, typename BinaryPredicate>
-  OutputIt unique_copy(InputIt first, InputIt last,
-                       OutputIt d_first, BinaryPredicate p)
+  inline OutputIt unique_copy(
+      InputIt first, InputIt last,
+      OutputIt d_first, BinaryPredicate p)
   {
     using U = typename std::iterator_traits<InputIt>::value_type;
     using P = std::pair<OutputIt, U>;
@@ -450,7 +498,8 @@ namespace acc
   }
 
   template <typename ForwardIt, typename BinaryPredicate>
-  ForwardIt unique(ForwardIt first, ForwardIt last, BinaryPredicate p)
+  inline ForwardIt unique(
+      ForwardIt first, ForwardIt last, BinaryPredicate p)
   {
     return acc::unique_copy(first, last, first, p);
   }

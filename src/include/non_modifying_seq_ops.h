@@ -32,7 +32,8 @@ namespace acc
   // find, find_if, find_if_not and derivatives
 
   template <typename InputIt, typename T>
-  InputIt find(InputIt first, InputIt last, const T& value)
+  inline InputIt find(
+      InputIt first, InputIt last, const T& value)
   {
     try
     {
@@ -50,7 +51,8 @@ namespace acc
   }
 
   template <typename InputIt, typename UnaryPredicate>
-  InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
+  inline InputIt find_if(
+      InputIt first, InputIt last, UnaryPredicate p)
   {
     try
     {
@@ -68,7 +70,8 @@ namespace acc
   }
 
   template <typename InputIt, typename UnaryPredicate>
-  InputIt find_if_not(InputIt first, InputIt last, UnaryPredicate p)
+  inline InputIt find_if_not(
+      InputIt first, InputIt last, UnaryPredicate p)
   {
     try
     {
@@ -86,19 +89,22 @@ namespace acc
   }
 
   template <class InputIt, class UnaryPredicate>
-  bool all_of(InputIt first, InputIt last, UnaryPredicate p)
+  inline bool all_of(
+      InputIt first, InputIt last, UnaryPredicate p)
   {
     return acc::find_if_not(first, last, p) == last;
   }
 
   template <class InputIt, class UnaryPredicate>
-  bool any_of(InputIt first, InputIt last, UnaryPredicate p)
+  inline bool any_of(
+      InputIt first, InputIt last, UnaryPredicate p)
   {
     return acc::find_if(first, last, p) != last;
   }
 
   template <class InputIt, class UnaryPredicate>
-  bool none_of(InputIt first, InputIt last, UnaryPredicate p)
+  inline bool none_of(
+      InputIt first, InputIt last, UnaryPredicate p)
   {
     return acc::find_if(first, last, p) == last;
   }
@@ -107,7 +113,8 @@ namespace acc
   // for_each
 
   template <typename InputIt, typename UnaryFunction>
-  UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f)
+  inline UnaryFunction for_each(
+      InputIt first, InputIt last, UnaryFunction f)
   {
     using T = typename std::iterator_traits<InputIt>::value_type;
     return *acc::accumulate(
@@ -121,7 +128,7 @@ namespace acc
   // count and count_if
 
   template <typename InputIt, typename T>
-  typename std::iterator_traits<InputIt>::difference_type
+  inline typename std::iterator_traits<InputIt>::difference_type
   count(InputIt first, InputIt last, const T& value)
   {
     using DT = typename std::iterator_traits<InputIt>::difference_type;
@@ -134,7 +141,7 @@ namespace acc
   }
 
   template <typename InputIt, typename UnaryPredicate>
-  typename std::iterator_traits<InputIt>::difference_type
+  inline typename std::iterator_traits<InputIt>::difference_type
   count_if(InputIt first, InputIt last, UnaryPredicate p)
   {
     using DT = typename std::iterator_traits<InputIt>::difference_type;
@@ -152,7 +159,7 @@ namespace acc
 
   template <typename InputIt1, typename InputIt2,
             typename BinaryPredicate>
-  std::pair<InputIt1, InputIt2>
+  inline std::pair<InputIt1, InputIt2>
   mismatch(InputIt1 first1, InputIt1 last1,
            InputIt2 first2,
            BinaryPredicate p)
@@ -176,7 +183,7 @@ namespace acc
 
   template <typename InputIt1, typename InputIt2,
             typename BinaryPredicate>
-  std::pair<InputIt1, InputIt2>
+  inline std::pair<InputIt1, InputIt2>
   mismatch(InputIt1 first1, InputIt1 last1,
            InputIt2 first2, InputIt2 last2,
            BinaryPredicate p)
@@ -203,9 +210,10 @@ namespace acc
 
   template <typename InputIt1, typename InputIt2,
             typename BinaryPredicate>
-  bool equal(InputIt1 first1, InputIt1 last1,
-             InputIt2 first2,
-             BinaryPredicate p)
+  inline bool equal(
+      InputIt1 first1, InputIt1 last1,
+      InputIt2 first2,
+      BinaryPredicate p)
   {
     try
     {
@@ -226,9 +234,10 @@ namespace acc
 
   template <typename InputIt1, typename InputIt2,
             typename BinaryPredicate>
-  bool equal(InputIt1 first1, InputIt1 last1,
-             InputIt2 first2, InputIt2 last2,
-             BinaryPredicate p)
+  inline bool equal(
+      InputIt1 first1, InputIt1 last1,
+      InputIt2 first2, InputIt2 last2,
+      BinaryPredicate p)
   {
     try
     {
@@ -251,9 +260,10 @@ namespace acc
   // find_end
 
   template <typename ForwardIt1, typename ForwardIt2, typename BinaryPredicate>
-  ForwardIt1 find_end(ForwardIt1 first, ForwardIt1 last,
-                      ForwardIt2 s_first, ForwardIt2 s_last,
-                      BinaryPredicate p)
+  inline ForwardIt1 find_end(
+      ForwardIt1 first, ForwardIt1 last,
+      ForwardIt2 s_first, ForwardIt2 s_last,
+      BinaryPredicate p)
   {
     if (s_first == s_last) return last;
     return acc::accumulate_iter(
@@ -268,9 +278,10 @@ namespace acc
   // find_first_of
 
   template <typename InputIt, typename ForwardIt, typename BinaryPredicate>
-  InputIt find_first_of(InputIt first, InputIt last,
-                        ForwardIt s_first, ForwardIt s_last,
-                        BinaryPredicate p)
+  inline InputIt find_first_of(
+      InputIt first, InputIt last,
+      ForwardIt s_first, ForwardIt s_last,
+      BinaryPredicate p)
   {
     try
     {
@@ -293,8 +304,9 @@ namespace acc
   // adjacent_find
 
   template <typename ForwardIt, typename BinaryPredicate>
-  ForwardIt adjacent_find(ForwardIt first, ForwardIt last,
-                          BinaryPredicate p)
+  inline ForwardIt adjacent_find(
+      ForwardIt first, ForwardIt last,
+      BinaryPredicate p)
   {
     if (first == last) return last;
     ForwardIt prev = first;
@@ -317,9 +329,10 @@ namespace acc
   // search
 
   template <typename ForwardIt1, typename ForwardIt2, typename BinaryPredicate>
-  ForwardIt1 search(ForwardIt1 first, ForwardIt1 last,
-                    ForwardIt2 s_first, ForwardIt2 s_last,
-                    BinaryPredicate p)
+  inline ForwardIt1 search(
+      ForwardIt1 first, ForwardIt1 last,
+      ForwardIt2 s_first, ForwardIt2 s_last,
+      BinaryPredicate p)
   {
     try
     {
@@ -341,8 +354,9 @@ namespace acc
 
   template <typename ForwardIt, typename Size,
             typename T, typename BinaryPredicate>
-  ForwardIt search_n(ForwardIt first, ForwardIt last,
-                     Size count, const T& val, BinaryPredicate p)
+  inline ForwardIt search_n(
+      ForwardIt first, ForwardIt last,
+      Size count, const T& val, BinaryPredicate p)
   {
     using P = std::pair<ForwardIt, Size>;
     return acc::accumulate_iter(
@@ -371,8 +385,9 @@ namespace acc
   // find all positions in the sequence that satisfy the predicate
 
   template <typename ForwardIt, typename OutputIt, typename UnaryPredicate>
-  OutputIt find_if_all(ForwardIt first, ForwardIt last,
-                       OutputIt dest, UnaryPredicate p)
+  inline OutputIt find_if_all(
+      ForwardIt first, ForwardIt last,
+      OutputIt dest, UnaryPredicate p)
   {
     return acc::accumulate_iter(
         first, last, dest,
@@ -389,9 +404,9 @@ namespace acc
   // applied to adjacent values
 
   template <typename ForwardIt, typename OutputIt, typename BinaryPredicate>
-  OutputIt adjacent_find_all(ForwardIt first, ForwardIt last,
-                             OutputIt dest,
-                             BinaryPredicate p)
+  inline OutputIt adjacent_find_all(
+      ForwardIt first, ForwardIt last,
+      OutputIt dest, BinaryPredicate p)
   {
     if (first == last) return dest;
     using P = std::pair<OutputIt, ForwardIt>;
