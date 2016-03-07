@@ -246,6 +246,39 @@ DEF_PROPERTY(ReverseCopy, ModifyingSeqOps, const vector<unsigned int>& v)
     && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
 }
 
+DEF_TEST(RotateEmpty, ModifyingSeqOps)
+{
+  vector<int> v;
+  auto x = rotate(v.begin(), v.end(), v.end());
+  auto y = acc::rotate(v.begin(), v.end(), v.end());
+  return x == v.begin() && y == v.begin();
+}
+
+DEF_PROPERTY(Rotate, ModifyingSeqOps, const vector<unsigned int>& v, unsigned int i)
+{
+  if (v.empty()) return true;
+
+  using diff_t = typename vector<unsigned int>::iterator::difference_type;
+  using udiff_t = typename std::make_unsigned<diff_t>::type;
+  udiff_t d = i % v.size();
+
+  vector<unsigned int> outx(v);
+  auto r = outx.begin();
+  std::advance(r, d);
+  auto x = rotate(outx.begin(), r, outx.end());
+
+  vector<unsigned int> outy(v);
+  auto s = outy.begin();
+  std::advance(s, d);
+  auto y = acc::rotate(outy.begin(), s, outy.end());
+
+  using ST = typename vector<unsigned int>::difference_type;
+  auto sx = static_cast<ST>(x - outx.begin());
+  auto sy = static_cast<ST>(y - outy.begin());
+
+  return sx == sy && outx == outy;
+}
+
 DEF_PROPERTY(RotateCopy, ModifyingSeqOps, const vector<unsigned int>& v)
 {
   using diff_t = typename vector<unsigned int>::iterator::difference_type;

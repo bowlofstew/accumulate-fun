@@ -374,7 +374,27 @@ namespace acc
   }
 
   // ---------------------------------------------------------------------------
-  // rotate?
+  // rotate
+
+  template <class ForwardIt>
+  ForwardIt rotate(ForwardIt first, ForwardIt n_first, ForwardIt last)
+  {
+    if (n_first == last) return last;
+    ForwardIt ret = first;
+    acc::accumulate_iter(
+        first, last, n_first,
+        [&] (ForwardIt a, ForwardIt b) {
+          iter_swap(a++, b++);
+          if (a == last) {
+            if (ret == first) ret = b;
+            a = n_first;
+          } else if (b == n_first) {
+            n_first = a;
+          }
+          return a;
+        });
+    return ret;
+  }
 
   // ---------------------------------------------------------------------------
   // rotate_copy
