@@ -50,8 +50,7 @@ DEF_PROPERTY(AdjacentDifference, Numeric, const vector<int>& v)
   auto sx = static_cast<ST>(x - outx.data());
   auto sy = static_cast<ST>(y - outy.data());
 
-  return sx == outx.size() && sy == outy.size()
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return sx == sy && outx == outy;
 }
 
 DEF_PROPERTY(PartialSum, Numeric, const vector<int>& v)
@@ -66,6 +65,5 @@ DEF_PROPERTY(PartialSum, Numeric, const vector<int>& v)
   auto sx = static_cast<ST>(x - outx.data());
   auto sy = static_cast<ST>(y - outy.data());
 
-  return sx == outx.size() && sy == outy.size()
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return sx == sy && outx == outy;
 }

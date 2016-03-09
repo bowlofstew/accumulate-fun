@@ -23,8 +23,7 @@ DEF_PROPERTY(Copy, ModifyingSeqOps, const vector<unsigned int>& v)
   auto sx = static_cast<ST>(x - outx.data());
   auto sy = static_cast<ST>(y - outy.data());
 
-  return sx == outx.size() && sy == outy.size()
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return sx == sy && outx == outy;
 }
 
 DEF_PROPERTY(CopyIf, ModifyingSeqOps, const vector<unsigned int>& v)
@@ -40,8 +39,7 @@ DEF_PROPERTY(CopyIf, ModifyingSeqOps, const vector<unsigned int>& v)
   auto sx = x - outx.data();
   auto sy = y - outy.data();
 
-  return sx == sy
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return sx == sy && outx == outy;
 }
 
 DEF_PROPERTY(CopyN, ModifyingSeqOps, const vector<unsigned int>& v)
@@ -56,8 +54,7 @@ DEF_PROPERTY(CopyN, ModifyingSeqOps, const vector<unsigned int>& v)
   auto sx = static_cast<ST>(x - outx.data());
   auto sy = static_cast<ST>(y - outy.data());
 
-  return sx == outx.size() && sy == outy.size()
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return sx == sy && outx == outy;
 }
 
 DEF_PROPERTY(CopyBackward, ModifyingSeqOps, const vector<unsigned int>& v)
@@ -68,8 +65,7 @@ DEF_PROPERTY(CopyBackward, ModifyingSeqOps, const vector<unsigned int>& v)
   vector<unsigned int> outy(v.size(), 0);
   auto y = acc::copy_backward(v.cbegin(), v.cend(), outy.end());
 
-  return x == outx.begin() && y == outy.begin()
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return x == outx.begin() && y == outy.begin() && outx == outy;
 }
 
 DEF_TEST(Move, ModifyingSeqOps)
@@ -199,8 +195,7 @@ DEF_PROPERTY(Transform, ModifyingSeqOps, const vector<unsigned int>& v)
   auto sx = static_cast<ST>(x - outx.data());
   auto sy = static_cast<ST>(y - outy.data());
 
-  return sx == outx.size() && sy == outy.size()
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return sx == sy && outx == outy;
 }
 
 DEF_PROPERTY(Transform2, ModifyingSeqOps, const vector<unsigned int>& v)
@@ -215,8 +210,7 @@ DEF_PROPERTY(Transform2, ModifyingSeqOps, const vector<unsigned int>& v)
   auto sx = static_cast<ST>(x - outx.data());
   auto sy = static_cast<ST>(y - outy.data());
 
-  return sx == outx.size() && sy == outy.size()
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return sx == sy && outx == outy;
 }
 
 DEF_PROPERTY(Reverse, ModifyingSeqOps, const vector<unsigned int>& v)
@@ -242,8 +236,7 @@ DEF_PROPERTY(ReverseCopy, ModifyingSeqOps, const vector<unsigned int>& v)
   auto sx = static_cast<ST>(x - outx.data());
   auto sy = static_cast<ST>(y - outy.data());
 
-  return sx == outx.size() && sy == outy.size()
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return sx == sy && outx == outy;
 }
 
 DEF_TEST(RotateEmpty, ModifyingSeqOps)
@@ -302,8 +295,7 @@ DEF_PROPERTY(RotateCopy, ModifyingSeqOps, const vector<unsigned int>& v)
   auto sx = static_cast<ST>(x - outx.data());
   auto sy = static_cast<ST>(y - outy.data());
 
-  return sx == outx.size() && sy == outy.size()
-    && equal(outx.cbegin(), outx.cend(), outy.cbegin(), outy.cend());
+  return sx == sy && outx == outy;
 }
 
 DEF_PROPERTY(Unique, ModifyingSeqOps, vector<unsigned int> v)
