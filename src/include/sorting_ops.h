@@ -1,6 +1,7 @@
 #pragma once
 
 #include "accumulate.h"
+#include "non_modifying_seq_ops.h"
 
 #include <iterator>
 #include <utility>
@@ -19,4 +20,24 @@
 
 namespace acc
 {
+  // ---------------------------------------------------------------------------
+  // is_sorted and is_sorted_until
+
+  template <typename ForwardIt, typename Compare>
+  inline ForwardIt is_sorted_until(
+      ForwardIt first, ForwardIt last, Compare cmp)
+  {
+    using T = typename std::iterator_traits<ForwardIt>::value_type;
+    ForwardIt it = acc::adjacent_find(
+        first, last,
+        [&] (const T& a, const T& b) { return !cmp(a, b); });
+    return it == last ? last : ++it;
+  }
+
+  template <typename ForwardIt, typename Compare>
+  inline bool is_sorted(ForwardIt first, ForwardIt last, Compare cmp)
+  {
+    return acc::is_sorted_until(first, last, cmp) == last;
+  }
+
 }
