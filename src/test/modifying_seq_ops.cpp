@@ -239,6 +239,24 @@ DEF_PROPERTY(ReverseCopy, ModifyingSeqOps, const vector<unsigned int>& v)
   return sx == sy && outx == outy;
 }
 
+DEF_PROPERTY(ReverseFwdIt, ModifyingSeqOps, const vector<unsigned int>& v)
+{
+  forward_list<unsigned int> l(v.crbegin(), v.crend());
+  acc::reverse(l.begin(), l.end());
+
+  return equal(l.cbegin(), l.cend(), v.cbegin(), v.cend());
+}
+
+DEF_PROPERTY(ReverseCopyFwdIt, ModifyingSeqOps, const vector<unsigned int>& v)
+{
+  forward_list<unsigned int> l(v.crbegin(), v.crend());
+
+  vector<unsigned int> outx(v.size(), 0);
+  acc::reverse_copy(l.cbegin(), l.cend(), outx.data());
+
+  return outx == v;
+}
+
 DEF_TEST(RotateEmpty, ModifyingSeqOps)
 {
   vector<int> v;

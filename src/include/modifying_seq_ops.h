@@ -385,32 +385,39 @@ namespace acc
   }
 
   // ---------------------------------------------------------------------------
-  // reverse
+  // reverse (note weakened iterator category)
 
-  template<class BidirIt>
-  inline void reverse(BidirIt first, BidirIt last)
+  template<class ForwardIt>
+  inline void reverse(ForwardIt first, ForwardIt last)
   {
-    using diff_t = typename std::iterator_traits<BidirIt>::difference_type;
-    diff_t d = std::distance(first, last) / 2;
-    BidirIt mid = first;
-    std::advance(mid, d);
-    acc::accumulate_iter(
-        first, mid, last,
-        [] (BidirIt a, BidirIt b) {
-          std::iter_swap(--a, b);
-          return a;
+    using diff_t = typename std::iterator_traits<ForwardIt>::difference_type;
+    diff_t d = std::distance(first, last);
+    ForwardIt mid = first;
+    std::advance(mid, d/2);
+
+    using T = typename std::iterator_traits<ForwardIt>::reference;
+    using F = std::function<ForwardIt(ForwardIt)>;
+    using std::swap;
+    auto f = acc::accumulate<ForwardIt, F, std::function<F(F, T)>>(
+        first, mid, [] (ForwardIt i) { return i; },
+        [&] (F a, const T b) {
+          return [a = std::move(a), &b] (ForwardIt i) {
+            swap(*i, b);
+            return a(++i); };
         });
+    if (d&1) ++mid;
+    f(mid);
   }
   
   // ---------------------------------------------------------------------------
-  // reverse_copy
+  // reverse_copy (note weakened iterator category)
 
-  template <typename BidirIt, typename OutputIt>
-  inline OutputIt reverse_copy(BidirIt first, BidirIt last, OutputIt d_first)
+  template <typename ForwardIt, typename OutputIt>
+  inline OutputIt reverse_copy(ForwardIt first, ForwardIt last, OutputIt d_first)
   {
-    using T = typename std::iterator_traits<BidirIt>::reference;
+    using T = typename std::iterator_traits<ForwardIt>::reference;
     using F = std::function<OutputIt(OutputIt)>;
-    return acc::accumulate<BidirIt, F, std::function<F(F, T)>>(
+    return acc::accumulate<ForwardIt, F, std::function<F(F, T)>>(
         first, last, [] (OutputIt d) { return d; },
         [] (F a, const T b) {
           return [a = std::move(a), &b] (OutputIt d) {
