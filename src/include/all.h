@@ -21,10 +21,10 @@
 // 16/16 non-modifying sequence ops
 //  4/ 4 numeric ops
 //  0/ 5 partitioning ops
-//  3/ 7 set ops
+//  6/ 7 set ops
 //  2/ 7 sorting ops
 //
-// 60/87 total
+// 63/87 total
 
 // not included in the 87:
 // iter_swap, swap, random_shuffle

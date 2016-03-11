@@ -79,6 +79,35 @@ namespace acc
   }
 
   // ---------------------------------------------------------------------------
+  // set_difference
+
+  template <typename InputIt1, typename InputIt2,
+            typename OutputIt, typename Compare>
+  inline OutputIt set_difference(
+      InputIt1 first1, InputIt1 last1,
+      InputIt2 first2, InputIt2 last2,
+      OutputIt d_first, Compare cmp)
+  {
+    using T = typename std::iterator_traits<InputIt1>::value_type;
+    using U = typename std::iterator_traits<InputIt2>::value_type;
+    if (first2 == last2) return acc::copy(first1, last1, d_first);
+
+    using P = std::pair<OutputIt, InputIt2>;
+    return acc::accumulate(
+        first1, last1, P{ d_first, first2 },
+          [&] (P p, const T& t) {
+            if (p.second == last2 || cmp(t, *p.second)) {
+              *p.first = t;
+              return P{ ++p.first, p.second };
+            }
+            InputIt2 it2 = acc::find_if_not(
+                p.second, last2,
+                [&] (const U& u) { return cmp(t, u); });
+            return P { p.first, ++it2 };
+          }).first;
+  }
+
+  // ---------------------------------------------------------------------------
   // set_intersection
 
   template <typename InputIt1, typename InputIt2,
@@ -104,4 +133,67 @@ namespace acc
         }).first;
   }
 
+  // ---------------------------------------------------------------------------
+  // set_symmetric_difference
+
+  template <typename InputIt1, typename InputIt2,
+            typename OutputIt, typename Compare>
+  inline OutputIt set_symmetric_difference(
+      InputIt1 first1, InputIt1 last1,
+      InputIt2 first2, InputIt2 last2,
+      OutputIt d_first, Compare cmp)
+  {
+    using T = typename std::iterator_traits<InputIt1>::value_type;
+    using U = typename std::iterator_traits<InputIt2>::value_type;
+    if (first1 == last1) return acc::copy(first2, last2, d_first);
+
+    using P = std::pair<OutputIt, InputIt2>;
+    P p = acc::accumulate(
+        first1, last1, P{ d_first, first2 },
+          [&] (P p, const T& t) {
+            p = acc::copy_while(
+                p.second, last2, p.first,
+                [&] (const U& u) { return cmp(u, t); });
+            if (p.second == last2 || cmp(t, *p.second)) {
+              *p.first++ = t;
+            }
+            else if (p.second != last2) {
+              ++p.second;
+            }
+            return p;
+          });
+    return acc::copy(p.second, last2, p.first);
+  }
+
+  // ---------------------------------------------------------------------------
+  // set_union
+
+  template <typename InputIt1, typename InputIt2,
+            typename OutputIt, typename Compare>
+  inline OutputIt set_union(
+      InputIt1 first1, InputIt1 last1,
+      InputIt2 first2, InputIt2 last2,
+      OutputIt d_first, Compare cmp)
+  {
+    using T = typename std::iterator_traits<InputIt1>::value_type;
+    using U = typename std::iterator_traits<InputIt2>::value_type;
+    if (first1 == last1) return acc::copy(first2, last2, d_first);
+
+    using P = std::pair<OutputIt, InputIt2>;
+    P p = acc::accumulate(
+        first1, last1, P{ d_first, first2 },
+          [&] (P p, const T& t) {
+            p = acc::copy_while(
+                p.second, last2, p.first,
+                [&] (const U& u) { return cmp(u, t); });
+            if (p.second == last2 || cmp(t, *p.second)) {
+              *p.first++ = t;
+            }
+            else if (p.second != last2) {
+              *p.first++ = *p.second++;
+            }
+            return p;
+          });
+    return acc::copy(p.second, last2, p.first);
+  }
 }
