@@ -152,3 +152,18 @@ DEF_TEST(SetIntersection2, SetOps)
   return sx == sy && outx == outy;
 }
 
+DEF_PROPERTY(Includes, SetOps, vector<unsigned int> v, unsigned long int i)
+{
+  if (v.empty()) return true;
+
+  std::mt19937 g(i);
+  std::uniform_int_distribution<int> dis(0, v.size()-1);
+
+  vector<unsigned int> w;
+  copy(v.begin(), v.begin()+dis(g), back_inserter(w));
+
+  sort(v.begin(), v.end());
+  sort(w.begin(), w.end());
+
+  return acc::includes(v.cbegin(), v.cend(), w.cbegin(), w.cend(), std::less<>{});
+}

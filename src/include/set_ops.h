@@ -27,8 +27,8 @@ namespace acc
   // ---------------------------------------------------------------------------
   // merge
 
-  template<class InputIt1, class InputIt2,
-           class OutputIt, class Compare>
+  template <typename InputIt1, typename InputIt2,
+            typename OutputIt, typename Compare>
   inline OutputIt merge(
       InputIt1 first1, InputIt1 last1,
       InputIt2 first2, InputIt2 last2,
@@ -50,10 +50,39 @@ namespace acc
   }
 
   // ---------------------------------------------------------------------------
+  // includes
+
+  template <typename InputIt1, typename InputIt2, typename Compare>
+  inline bool includes(
+      InputIt1 first1, InputIt1 last1,
+      InputIt2 first2, InputIt2 last2,
+      Compare cmp)
+  {
+    using T = typename std::iterator_traits<InputIt1>::value_type;
+    if (first2 == last2) return true;
+    try
+    {
+      acc::accumulate(
+          first1, last1, first2,
+          [&] (InputIt2 i, const T& t) {
+            if (cmp(*i, t)) throw false;
+            if (!cmp(t, *i)) ++i;
+            if (i == last2) throw true;
+            return i;
+          });
+      return false;
+    }
+    catch (bool b)
+    {
+      return b;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // set_intersection
 
-  template<class InputIt1, class InputIt2,
-           class OutputIt, class Compare>
+  template <typename InputIt1, typename InputIt2,
+            typename OutputIt, typename Compare>
   inline OutputIt set_intersection(
       InputIt1 first1, InputIt1 last1,
       InputIt2 first2, InputIt2 last2,

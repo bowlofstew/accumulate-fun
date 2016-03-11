@@ -387,7 +387,7 @@ namespace acc
   // ---------------------------------------------------------------------------
   // reverse (note weakened iterator category)
 
-  template<class ForwardIt>
+  template <typename ForwardIt>
   inline void reverse(ForwardIt first, ForwardIt last)
   {
     using diff_t = typename std::iterator_traits<ForwardIt>::difference_type;
@@ -429,7 +429,7 @@ namespace acc
   // ---------------------------------------------------------------------------
   // rotate
 
-  template <class ForwardIt>
+  template <typename ForwardIt>
   inline ForwardIt rotate(ForwardIt first, ForwardIt n_first, ForwardIt last)
   {
     if (n_first == last) return last;
