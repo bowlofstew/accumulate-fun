@@ -336,15 +336,12 @@ DEF_PROPERTY(Unique, ModifyingSeqOps, vector<unsigned int> v)
     && equal(v.begin(), x, w.begin(), y);
 }
 
-DEF_PROPERTY(Shuffle, ModifyingSeqOps, const vector<unsigned int>& v)
+DEF_PROPERTY(Shuffle, ModifyingSeqOps, const vector<unsigned int>& v, unsigned long int i)
 {
   vector<unsigned int> w{v};
 
-  std::random_device rd;
-  std::mt19937 g(rd());
+  std::mt19937 g(i);
   acc::shuffle(w.begin(), w.end(), g);
 
-  bool b = is_permutation(v.cbegin(), v.cend(), w.cbegin());
-
-  return b && (v.empty() || w != v);
+  return is_permutation(v.cbegin(), v.cend(), w.cbegin());
 }

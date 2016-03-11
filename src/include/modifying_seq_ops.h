@@ -473,11 +473,11 @@ namespace acc
     using param_t = typename distr_t::param_type;
 
     distr_t D;
-    udiff_t d = last - first - 1;
+    udiff_t d = last - first;
     acc::accumulate_iter(
         first, last, d,
         [&] (udiff_t d, RandomIt i) {
-          RandomIt r = i + D(g, param_t{0, d});
+          RandomIt r = i + D(g, param_t{0, d-1});
           std::iter_swap(i, r);
           return --d;
         });
