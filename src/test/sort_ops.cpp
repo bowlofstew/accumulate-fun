@@ -31,3 +31,11 @@ DEF_PROPERTY(IsSortedUntil, SortOps, vector<unsigned int> v)
   auto i = acc::is_sorted_until(v.cbegin(), v.cend(), std::less<>{});
   return i >= v.cbegin()+d;
 }
+
+DEF_PROPERTY(Sort, SortingOps, vector<unsigned int> v)
+{
+  vector<unsigned int> w{v};
+  sort(v.begin(), v.end());
+  acc::sort(w.begin(), w.end());
+  return w == v;
+}

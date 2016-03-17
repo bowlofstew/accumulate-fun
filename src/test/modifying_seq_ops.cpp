@@ -265,6 +265,14 @@ DEF_TEST(RotateEmpty, ModifyingSeqOps)
   return x == v.begin() && y == v.begin();
 }
 
+DEF_TEST(RotateEnd, ModifyingSeqOps)
+{
+  vector<int> v{1,2,3};
+  auto x = rotate(v.begin(), v.end(), v.end());
+  auto y = acc::rotate(v.begin(), v.end(), v.end());
+  return x == v.begin() && y == v.begin();
+}
+
 DEF_PROPERTY(Rotate, ModifyingSeqOps, const vector<unsigned int>& v, unsigned int i)
 {
   if (v.empty()) return true;

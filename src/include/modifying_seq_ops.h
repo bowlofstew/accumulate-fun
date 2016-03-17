@@ -432,7 +432,7 @@ namespace acc
   template <typename ForwardIt>
   inline ForwardIt rotate(ForwardIt first, ForwardIt n_first, ForwardIt last)
   {
-    if (n_first == last) return last;
+    if (n_first == last) return first;
     ForwardIt ret = first;
     acc::accumulate_iter(
         first, last, n_first,

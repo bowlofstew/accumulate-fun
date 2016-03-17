@@ -2,7 +2,9 @@
 
 #include "accumulate.h"
 #include "non_modifying_seq_ops.h"
+#include "partitioning_ops.h"
 
+#include <functional>
 #include <iterator>
 #include <utility>
 
@@ -38,6 +40,34 @@ namespace acc
   inline bool is_sorted(ForwardIt first, ForwardIt last, Compare cmp)
   {
     return acc::is_sorted_until(first, last, cmp) == last;
+  }
+
+  // ---------------------------------------------------------------------------
+  // sort
+
+  template <typename ForwardIt, typename Compare>
+  void sort(ForwardIt first, ForwardIt last, Compare cmp)
+  {
+    auto n = std::distance(first, last);
+    if (n <= 1) return;
+    auto pivot = *std::next(first, n/2);
+
+    using T = typename std::iterator_traits<ForwardIt>::value_type;
+    ForwardIt middle1 = acc::partition(
+        first, last,
+        [pivot, &cmp](const T& a){ return cmp(a, pivot); });
+    ForwardIt middle2 = acc::partition(
+        middle1, last,
+        [pivot, &cmp](const T& a){ return !cmp(pivot, a); });
+
+    acc::sort(first, middle1, cmp);
+    acc::sort(middle2, last, cmp);
+  }
+
+  template <typename ForwardIt>
+  void sort(ForwardIt first, ForwardIt last)
+  {
+    acc::sort(first, last, std::less<>{});
   }
 
 }
