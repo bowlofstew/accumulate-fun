@@ -370,3 +370,20 @@ DEF_TEST(MergeRepeated2, SetOps)
 
   return dest == v_expected;
 }
+
+DEF_PROPERTY(InplaceMerge, SetOps,
+             vector<unsigned int> v, unsigned long int i)
+{
+  std::mt19937 g(i);
+  std::uniform_int_distribution<int> dis(0, v.size());
+
+  int d = dis(g);
+  auto m = v.begin() + d;
+  sort(v.begin(), m);
+  sort(m, v.end());
+
+  acc::inplace_merge(v.begin(), m, v.end(), std::less<>{});
+
+  return is_sorted(v.cbegin(), v.cend());
+}
+

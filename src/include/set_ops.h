@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <utility>
 
 // ---------------------------------------------------------------------------
@@ -47,6 +48,35 @@ namespace acc
           return a;
         });
     return acc::copy(p.second, last2, p.first);
+  }
+
+  // ---------------------------------------------------------------------------
+  // inplace_merge
+  template <typename BidirIt, typename Compare>
+  inline void inplace_merge(
+      BidirIt first, BidirIt middle, BidirIt last, Compare comp)
+  {
+    using T = typename std::iterator_traits<BidirIt>::value_type;
+
+    auto d1 = std::distance(first, middle);
+    auto d2 = std::distance(middle, last);
+
+    auto n = std::min(d1, d2);
+    auto tmp = std::make_unique<char[]>(n * sizeof(T));
+    T* begint = reinterpret_cast<T*>(tmp.get());
+    T* endt = begint + n;
+
+    if (d1 <= d2)
+    {
+      acc::move(first, middle, begint);
+      acc::merge(begint, endt, middle, last, first, comp);
+    }
+    else
+    {
+      acc::move(middle, last, begint);
+      auto i = acc::move_backward(first, middle, last);
+      acc::merge(i, last, begint, endt, first, comp);
+    }
   }
 
   // ---------------------------------------------------------------------------
