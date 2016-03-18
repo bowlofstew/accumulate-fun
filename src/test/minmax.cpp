@@ -88,3 +88,21 @@ DEF_PROPERTY(IsPermutation, MinMax, const vector<unsigned int>& v, unsigned long
 
   return acc::is_permutation(v.cbegin(), v.cend(), w.cbegin());
 }
+
+DEF_PROPERTY(NextPermutation, MinMax, vector<unsigned int> v)
+{
+  vector<unsigned int> w{v};
+  next_permutation(v.begin(), v.end());
+  acc::next_permutation(w.begin(), w.end());
+
+  return v == w;
+}
+
+DEF_PROPERTY(PrevPermutation, MinMax, vector<unsigned int> v)
+{
+  vector<unsigned int> w{v};
+  prev_permutation(v.begin(), v.end());
+  acc::prev_permutation(w.begin(), w.end());
+
+  return v == w;
+}

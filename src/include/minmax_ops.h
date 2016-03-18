@@ -1,6 +1,7 @@
 #pragma once
 
 #include "accumulate.h"
+#include "modifying_seq_ops.h"
 #include "non_modifying_seq_ops.h"
 
 #ifndef _MSC_VER
@@ -211,6 +212,79 @@ namespace acc
           auto m = acc::count(d_first, d_last, *i);
           return m != 0 && acc::count(i, last, *i) == m;
         });
+  }
+
+
+  // ---------------------------------------------------------------------------
+  // next_permutation
+
+  template <typename BidirIt, typename Compare>
+  bool next_permutation(BidirIt first, BidirIt last, Compare cmp)
+  {
+    using T = typename std::iterator_traits<BidirIt>::value_type;
+    std::reverse_iterator<BidirIt> rfirst(last);
+    std::reverse_iterator<BidirIt> rlast(first);
+
+    auto i = acc::adjacent_find(
+        rfirst, rlast,
+        [&] (const T& a, const T& b) { return cmp(b, a); });
+    if (i == rlast)
+    {
+      acc::reverse(first, last);
+      return false;
+    }
+    else
+    {
+      ++i;
+      auto j = acc::find_if(
+          rfirst, i,
+          [&] (const T& a) { return cmp(*i, a); });
+      std::iter_swap(i, j);
+      acc::reverse(rfirst, i);
+      return true;
+    }
+  }
+
+  template <typename BidirIt>
+  bool next_permutation(BidirIt first, BidirIt last)
+  {
+    return acc::next_permutation(first, last, std::less<>{});
+  }
+
+  // ---------------------------------------------------------------------------
+  // prev_permutation
+
+  template <typename BidirIt, typename Compare>
+  bool prev_permutation(BidirIt first, BidirIt last, Compare cmp)
+  {
+    using T = typename std::iterator_traits<BidirIt>::value_type;
+    std::reverse_iterator<BidirIt> rfirst(last);
+    std::reverse_iterator<BidirIt> rlast(first);
+
+    auto i = acc::adjacent_find(
+        rfirst, rlast,
+        [&] (const T& a, const T& b) { return cmp(a, b); });
+    if (i == rlast)
+    {
+      acc::reverse(first, last);
+      return false;
+    }
+    else
+    {
+      ++i;
+      auto j = acc::find_if(
+          rfirst, i,
+          [&] (const T& a) { return cmp(a, *i); });
+      std::iter_swap(i, j);
+      acc::reverse(rfirst, i);
+      return true;
+    }
+  }
+
+  template <typename BidirIt>
+  bool prev_permutation(BidirIt first, BidirIt last)
+  {
+    return acc::prev_permutation(first, last, std::less<>{});
   }
 
 }
