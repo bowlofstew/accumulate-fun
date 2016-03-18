@@ -196,8 +196,8 @@ namespace acc
   // is_permutation
 
   template <typename ForwardIt1, typename ForwardIt2>
-  bool is_permutation(ForwardIt1 first, ForwardIt1 last,
-                      ForwardIt2 d_first)
+  inline bool is_permutation(ForwardIt1 first, ForwardIt1 last,
+                             ForwardIt2 d_first)
   {
     std::tie(first, d_first) = acc::mismatch(first, last, d_first, std::equal_to<>{});
     if (first == last) return true;
@@ -219,7 +219,7 @@ namespace acc
   // next_permutation
 
   template <typename BidirIt, typename Compare>
-  bool next_permutation(BidirIt first, BidirIt last, Compare cmp)
+  inline bool next_permutation(BidirIt first, BidirIt last, Compare cmp)
   {
     using T = typename std::iterator_traits<BidirIt>::value_type;
     std::reverse_iterator<BidirIt> rfirst(last);
@@ -246,7 +246,7 @@ namespace acc
   }
 
   template <typename BidirIt>
-  bool next_permutation(BidirIt first, BidirIt last)
+  inline bool next_permutation(BidirIt first, BidirIt last)
   {
     return acc::next_permutation(first, last, std::less<>{});
   }
@@ -255,7 +255,7 @@ namespace acc
   // prev_permutation
 
   template <typename BidirIt, typename Compare>
-  bool prev_permutation(BidirIt first, BidirIt last, Compare cmp)
+  inline bool prev_permutation(BidirIt first, BidirIt last, Compare cmp)
   {
     using T = typename std::iterator_traits<BidirIt>::value_type;
     std::reverse_iterator<BidirIt> rfirst(last);
@@ -282,7 +282,7 @@ namespace acc
   }
 
   template <typename BidirIt>
-  bool prev_permutation(BidirIt first, BidirIt last)
+  inline bool prev_permutation(BidirIt first, BidirIt last)
   {
     return acc::prev_permutation(first, last, std::less<>{});
   }

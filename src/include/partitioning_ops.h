@@ -38,7 +38,7 @@ namespace acc
   // partition and partition_copy
 
   template <typename ForwardIt, typename UnaryPredicate>
-  ForwardIt partition(
+  inline ForwardIt partition(
       ForwardIt first, ForwardIt last, UnaryPredicate p)
   {
     first = acc::find_if_not(first, last, p);
@@ -56,7 +56,7 @@ namespace acc
 
   template <typename InputIt, typename OutputIt1,
             typename OutputIt2, typename UnaryPredicate>
-  std::pair<OutputIt1, OutputIt2> partition_copy(
+  inline std::pair<OutputIt1, OutputIt2> partition_copy(
       InputIt first, InputIt last,
       OutputIt1 d_first_true, OutputIt2 d_first_false,
       UnaryPredicate p)
@@ -80,7 +80,7 @@ namespace acc
   // stable_partition
 
   template <typename ForwardIt, typename UnaryPredicate>
-  ForwardIt stable_partition(
+  inline ForwardIt stable_partition(
       ForwardIt first, ForwardIt last, UnaryPredicate p)
   {
     auto n = std::distance(first, last);

@@ -49,7 +49,7 @@ namespace acc
   // sort
 
   template <typename ForwardIt, typename Compare>
-  void sort(ForwardIt first, ForwardIt last, Compare cmp)
+  inline void sort(ForwardIt first, ForwardIt last, Compare cmp)
   {
     auto n = std::distance(first, last);
     if (n <= 1) return;
@@ -77,7 +77,7 @@ namespace acc
   // stable sort
 
   template <typename ForwardIt, typename Compare>
-  void stable_sort(ForwardIt first, ForwardIt last, Compare cmp)
+  inline void stable_sort(ForwardIt first, ForwardIt last, Compare cmp)
   {
     auto n = std::distance(first, last);
     if (n > 1)
