@@ -9,6 +9,8 @@
 #include <iterator>
 #include <utility>
 
+#include <iostream>
+
 // ---------------------------------------------------------------------------
 // 7 sorting operations
 //
@@ -91,6 +93,40 @@ namespace acc
   void stable_sort(ForwardIt first, ForwardIt last)
   {
     acc::stable_sort(first, last, std::less<>{});
+  }
+
+
+  // ---------------------------------------------------------------------------
+  // nth element
+
+  template <typename RandomIt, typename Compare>
+  void nth_element(
+      RandomIt first, RandomIt nth, RandomIt last, Compare cmp)
+  {
+    if (first == last || nth == last) return;
+
+    using T = typename std::iterator_traits<RandomIt>::value_type;
+    auto i = acc::partition(
+        std::next(first), last,
+        [&] (const T& a) { return cmp(a, *first); });
+    std::iter_swap(--i, first);
+    if (i == nth) return;
+
+    if (nth < i)
+    {
+      acc::nth_element(first, nth, i, cmp);
+    }
+    else
+    {
+      acc::nth_element(++i, nth, last, cmp);
+    }
+  }
+
+  template <typename RandomIt>
+  void nth_element(
+      RandomIt first, RandomIt nth, RandomIt last)
+  {
+    return acc::nth_element(first, nth, last, std::less<>{});
   }
 
 }

@@ -47,3 +47,23 @@ DEF_PROPERTY(StableSort, SortingOps, vector<unsigned int> v)
   acc::stable_sort(w.begin(), w.end());
   return w == v;
 }
+
+DEF_PROPERTY(NthElement, SortingOps, vector<unsigned int> v, unsigned long int i)
+{
+  if (v.empty()) return true;
+
+  std::mt19937 g(i);
+  std::uniform_int_distribution<int> dis(0, v.size()-1);
+
+  auto n = dis(g);
+
+  vector<unsigned int> w(v);
+
+  auto vnth = v.begin() + n;
+  nth_element(v.begin(), vnth, v.end());
+
+  auto wnth = w.begin() + n;
+  acc::nth_element(w.begin(), wnth, w.end());
+
+  return wnth - w.begin() == vnth - v.begin() && *wnth == *vnth;
+}
