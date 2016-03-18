@@ -39,3 +39,11 @@ DEF_PROPERTY(Sort, SortingOps, vector<unsigned int> v)
   acc::sort(w.begin(), w.end());
   return w == v;
 }
+
+DEF_PROPERTY(StableSort, SortingOps, vector<unsigned int> v)
+{
+  vector<unsigned int> w{v};
+  stable_sort(v.begin(), v.end());
+  acc::stable_sort(w.begin(), w.end());
+  return w == v;
+}

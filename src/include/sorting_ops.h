@@ -3,6 +3,7 @@
 #include "accumulate.h"
 #include "non_modifying_seq_ops.h"
 #include "partitioning_ops.h"
+#include "set_ops.h"
 
 #include <functional>
 #include <iterator>
@@ -68,6 +69,28 @@ namespace acc
   void sort(ForwardIt first, ForwardIt last)
   {
     acc::sort(first, last, std::less<>{});
+  }
+
+  // ---------------------------------------------------------------------------
+  // stable sort
+
+  template <typename ForwardIt, typename Compare>
+  void stable_sort(ForwardIt first, ForwardIt last, Compare cmp)
+  {
+    auto n = std::distance(first, last);
+    if (n > 1)
+    {
+      auto m = first + n/2;
+      acc::stable_sort(first, m, cmp);
+      acc::stable_sort(m, last, cmp);
+      acc::inplace_merge(first, m, last, cmp);
+    }
+  }
+
+  template <typename ForwardIt>
+  void stable_sort(ForwardIt first, ForwardIt last)
+  {
+    acc::stable_sort(first, last, std::less<>{});
   }
 
 }

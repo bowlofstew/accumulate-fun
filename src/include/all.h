@@ -22,9 +22,9 @@
 //  4/ 4 numeric ops
 //  4/ 5 partitioning ops
 //  7/ 7 set ops
-//  3/ 7 sorting ops
+//  4/ 7 sorting ops
 //
-// 69/87 total
+// 70/87 total
 
 // not included in the 87:
 // iter_swap, swap, random_shuffle

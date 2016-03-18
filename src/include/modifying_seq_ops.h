@@ -121,17 +121,17 @@ namespace acc
   // ---------------------------------------------------------------------------
   // copy_backward
 
-  template <typename BidirIt1, typename BidirIt2>
-  inline BidirIt2 copy_backward(
-      BidirIt1 first, BidirIt1 last,
-      BidirIt2 d_last)
+  template <typename InputIt, typename BidirIt>
+  inline BidirIt copy_backward(
+      InputIt first, InputIt last,
+      BidirIt d_last)
   {
-    using T = typename std::iterator_traits<BidirIt1>::reference;
-    using F = std::function<BidirIt2(BidirIt2)>;
-    return acc::accumulate<BidirIt1, F, std::function<F(F, T)>>(
-        first, last, [] (BidirIt2 d) { return d; },
+    using T = typename std::iterator_traits<InputIt>::reference;
+    using F = std::function<BidirIt(BidirIt)>;
+    return acc::accumulate<InputIt, F, std::function<F(F, T)>>(
+        first, last, [] (BidirIt d) { return d; },
         [] (F a, const T b) {
-          return [a = std::move(a), &b] (BidirIt2 d) {
+          return [a = std::move(a), &b] (BidirIt d) {
             *(--d) = b;
             return a(d); };
         })(d_last);
@@ -154,17 +154,17 @@ namespace acc
         });
   }
 
-  template <typename BidirIt1, typename BidirIt2>
-  inline BidirIt2 move_backward(
-      BidirIt1 first, BidirIt1 last,
-      BidirIt2 d_last)
+  template <typename InputIt, typename BidirIt>
+  inline BidirIt move_backward(
+      InputIt first, InputIt last,
+      BidirIt d_last)
   {
-    using T = typename std::iterator_traits<BidirIt1>::reference;
-    using F = std::function<BidirIt2(BidirIt2)>;
-    return acc::accumulate<BidirIt1, F, std::function<F(F, T)>>(
-        first, last, [] (BidirIt2 d) { return d; },
+    using T = typename std::iterator_traits<InputIt>::reference;
+    using F = std::function<BidirIt(BidirIt)>;
+    return acc::accumulate<InputIt, F, std::function<F(F, T)>>(
+        first, last, [] (BidirIt d) { return d; },
         [] (F a, T& b) {
-          return [a = std::move(a), &b] (BidirIt2 d) {
+          return [a = std::move(a), &b] (BidirIt d) {
             *(--d) = std::move(b);
             return a(d); };
         })(d_last);
@@ -412,12 +412,12 @@ namespace acc
   // ---------------------------------------------------------------------------
   // reverse_copy (note weakened iterator category)
 
-  template <typename ForwardIt, typename OutputIt>
-  inline OutputIt reverse_copy(ForwardIt first, ForwardIt last, OutputIt d_first)
+  template <typename InputIt, typename OutputIt>
+  inline OutputIt reverse_copy(InputIt first, InputIt last, OutputIt d_first)
   {
-    using T = typename std::iterator_traits<ForwardIt>::reference;
+    using T = typename std::iterator_traits<InputIt>::reference;
     using F = std::function<OutputIt(OutputIt)>;
-    return acc::accumulate<ForwardIt, F, std::function<F(F, T)>>(
+    return acc::accumulate<InputIt, F, std::function<F(F, T)>>(
         first, last, [] (OutputIt d) { return d; },
         [] (F a, const T b) {
           return [a = std::move(a), &b] (OutputIt d) {
