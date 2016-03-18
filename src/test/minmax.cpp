@@ -78,3 +78,13 @@ DEF_PROPERTY(LexicographicalCompare2, MinMax,
                                         w.cbegin(), w.cend(), std::less<>());
   return a == b;
 }
+
+DEF_PROPERTY(IsPermutation, MinMax, const vector<unsigned int>& v, unsigned long int i)
+{
+  vector<unsigned int> w{v};
+
+  std::mt19937 g(i);
+  shuffle(w.begin(), w.end(), g);
+
+  return acc::is_permutation(v.cbegin(), v.cend(), w.cbegin());
+}

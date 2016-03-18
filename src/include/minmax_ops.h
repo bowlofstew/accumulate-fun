@@ -1,6 +1,7 @@
 #pragma once
 
 #include "accumulate.h"
+#include "non_modifying_seq_ops.h"
 
 #ifndef _MSC_VER
 #include <experimental/optional>
@@ -8,6 +9,7 @@
 
 #include <initializer_list>
 #include <iterator>
+#include <tuple>
 #include <utility>
 
 // ---------------------------------------------------------------------------
@@ -187,6 +189,28 @@ namespace acc
     {
       return b;
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // is_permutation
+
+  template <typename ForwardIt1, typename ForwardIt2>
+  bool is_permutation(ForwardIt1 first, ForwardIt1 last,
+                      ForwardIt2 d_first)
+  {
+    std::tie(first, d_first) = acc::mismatch(first, last, d_first, std::equal_to<>{});
+    if (first == last) return true;
+
+    ForwardIt2 d_last = d_first;
+    std::advance(d_last, std::distance(first, last));
+    return acc::accumulate_iter(
+        first, last, true,
+        [&] (bool b, ForwardIt1 i) {
+          if (!b) return false;
+          if (acc::count(first, i, *i) != 0) return true;
+          auto m = acc::count(d_first, d_last, *i);
+          return m != 0 && acc::count(i, last, *i) == m;
+        });
   }
 
 }

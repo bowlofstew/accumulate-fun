@@ -16,7 +16,7 @@
 //
 //  0/ 4 binary search ops
 //  0/ 6 heap ops
-//  7/10 min/max ops
+//  8/10 min/max ops
 // 27/27 modifying sequence ops
 // 16/16 non-modifying sequence ops
 //  4/ 4 numeric ops
@@ -24,7 +24,7 @@
 //  7/ 7 set ops
 //  5/ 7 sorting ops
 //
-// 71/87 total
+// 72/87 total
 
 // not included in the 87:
 // iter_swap, swap, random_shuffle, clamp
