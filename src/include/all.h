@@ -15,7 +15,7 @@
 //  1/ 1 accumulate itself
 //
 //  0/ 4 binary search ops
-//  0/ 6 heap ops
+//  2/ 6 heap ops
 // 10/10 min/max ops
 // 27/27 modifying sequence ops
 // 16/16 non-modifying sequence ops
@@ -24,7 +24,7 @@
 //  7/ 7 set ops
 //  5/ 7 sorting ops
 //
-// 74/87 total
+// 76/87 total
 
 // not included in the 87:
-// iter_swap, swap, random_shuffle, clamp
+// iter_swap, swap, random_shuffle
