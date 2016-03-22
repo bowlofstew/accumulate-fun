@@ -33,3 +33,10 @@ DEF_PROPERTY(IsHeapUntil, HeapOps, vector<unsigned int> v)
 
   return i == j && i >= v.cbegin()+d;
 }
+
+DEF_PROPERTY(SortHeap, HeapOps, vector<unsigned int> v)
+{
+  make_heap(v.begin(), v.end());
+  acc::sort_heap(v.begin(), v.end());
+  return is_sorted(v.cbegin(), v.cend());
+}

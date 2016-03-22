@@ -2,6 +2,7 @@
 
 #include "accumulate.h"
 
+#include <algorithm>
 #include <functional>
 
 // ---------------------------------------------------------------------------
@@ -63,6 +64,26 @@ namespace acc
       RandomIt first, RandomIt last)
   {
     return acc::is_heap(first, last, std::less<>{});
+  }
+
+  // ---------------------------------------------------------------------------
+  // sort_heap
+
+  template <typename RandomIt, typename Compare>
+  inline void sort_heap(RandomIt first, RandomIt last, Compare cmp)
+  {
+    acc::accumulate_iter(
+        first, last, last,
+        [&] (RandomIt dest, const RandomIt&) {
+          std::pop_heap(first, dest, cmp);
+          return --dest;
+        });
+  }
+
+  template <typename RandomIt>
+  inline void sort_heap(RandomIt first, RandomIt last)
+  {
+    acc::sort_heap(first, last, std::less<>{});
   }
 
 }
