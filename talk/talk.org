@@ -12,7 +12,7 @@
 #+REVEAL_EXTRA_CSS: ./presentation.css
 #+REVEAL_ROOT: ../../reveal.js/
 
-# (setq org-reveal-title-slide-template "<h1>%t</h1><h2>%a</h2><h2>%e</h2><h2><a href=\"http://twitter.com/ben_deane\">@ben_deane</a></h2><h2>%d</h2>")
+# (setq org-reveal-title-slide-template "<h1>%t</h1><h2>%a</h2><h3>%e / <a href=\"http://twitter.com/ben_deane\">@ben_deane</a></h3><h2>%d</h2>")
 
 #+TITLE: Desert Island Algorithms
 #+AUTHOR: Ben Deane
@@ -26,6 +26,7 @@ Maybe some "building block" algorithms?
 #+ATTR_REVEAL: :frag (appear)
  - ~partition~
  - ~rotate~
+ - ~reverse~
 #+ATTR_REVEAL: :frag appear
 Maybe some others?
 #+ATTR_REVEAL: :frag appear
@@ -35,7 +36,7 @@ What if you couldn't write any loops, so you're stuck with what you have?
 
 * The Algorithms (pre-C++17)
 #+REVEAL_HTML: <div id="columns"> <div id="fiveup">
-#+ATTR_REVEAL: :frag (none none none none none highlight-red none none none none none none none highlight-red none none none none none none none none none none none none none none none none none none none none highlight-red none highlight-red highlight-red none none none none none none none none none none none none none highlight-red highlight-red none none none highlight-red highlight-red none highlight-red highlight-red none none none none none none none none none none none none none none none none none none none none none none none highlight-red none none none none highlight-red) :frag_idx (1 1 1 1 1 3 1 1 1 1 1 1 1 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 3 4 1 1 1 1 1 1 1 1 1 1 1 1 1 4 4 1 1 1 3 4 1 4 5 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 3)
+#+ATTR_REVEAL: :frag (none none none none none highlight-red none none none none none none none highlight-red none none none none none none none none none none none none none none none none none none none none highlight-red none highlight-red highlight-red none none none none none none none none none none none none none highlight-red highlight-red none none none highlight-red highlight-red none highlight-red highlight-red none none none none none none none none none none none none none none none none none none none none none none none highlight-red none none none none highlight-red) :frag_idx (1 1 1 1 1 4 1 1 1 1 1 1 1 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 4 5 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5 1 1 1 4 5 1 5 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 4)
  - ~accumulate~
  - ~adjacent_difference~
  - ~adjacent_find~
@@ -130,6 +131,32 @@ What if you couldn't write any loops, so you're stuck with what you have?
 
 #+ATTR_REVEAL: :frag appear
 Of 90 total, 77 are basically "plain loops"
+
+* The Most Powerful Algorithm?
+#+ATTR_REVEAL: :frag appear
+It's not even in ~<algorithm>~...
+#+ATTR_REVEAL: :frag appear
+APL calls it ~/~
+#+ATTR_REVEAL: :frag appear
+Many languages call it ~reduce~
+#+ATTR_REVEAL: :frag appear
+C++ calls it ~accumulate~ (or ~reduce~ in C++17, basically the same)
+
+* ~std::accumulate~
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <class InputIt, class T, class BinaryOp>
+T accumulate(InputIt first, InputIt last,
+             T init, BinaryOp op)
+{
+  for (; first != last; ++first) {
+    init = op(init, *first);
+  }
+  return init;
+}
+#+END_SRC
+#+REVEAL_HTML: <br/>
+"In the range [ ~first~, ~last~ ], ~binary_op~ shall neither modify elements nor invalidate iterators or subranges."
 
 * accumulate
 with plus -> sum

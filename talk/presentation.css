@@ -9,6 +9,11 @@
     font-family: Inconsolata;
 }
 
+.reveal pre {
+    font-family: Inconsolata;
+    font-size: 30px;
+}
+
 #fiveup code {
     font-family: Inconsolata;
     font-size: 20px;
