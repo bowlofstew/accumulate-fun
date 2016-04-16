@@ -395,14 +395,13 @@ namespace acc
     ForwardIt mid = first;
     std::advance(mid, d/2);
 
-    using T = typename std::iterator_traits<ForwardIt>::reference;
     using F = std::function<ForwardIt(ForwardIt)>;
     using std::swap;
-    auto f = acc::accumulate<ForwardIt, F, std::function<F(F, T)>>(
+    auto f = acc::accumulate_iter<ForwardIt, F, std::function<F(F, ForwardIt)>>(
         first, mid, [] (ForwardIt i) { return i; },
-        [&] (F a, const T b) {
-          return [a = std::move(a), &b] (ForwardIt i) {
-            swap(*i, b);
+        [&] (F a, ForwardIt b) {
+          return [a = std::move(a), b] (ForwardIt i) {
+            iter_swap(i, b);
             return a(++i); };
         });
     if (d&1) ++mid;
