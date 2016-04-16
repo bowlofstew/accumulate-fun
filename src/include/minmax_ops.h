@@ -216,14 +216,14 @@ namespace acc
 
 
   // ---------------------------------------------------------------------------
-  // next_permutation
+  // next_permutation (note weakened iterator category)
 
-  template <typename BidirIt, typename Compare>
-  inline bool next_permutation(BidirIt first, BidirIt last, Compare cmp)
+  template <typename ForwardIt, typename Compare>
+  inline bool next_permutation(ForwardIt first, ForwardIt last, Compare cmp)
   {
-    using T = typename std::iterator_traits<BidirIt>::value_type;
-    std::reverse_iterator<BidirIt> rfirst(last);
-    std::reverse_iterator<BidirIt> rlast(first);
+    using T = typename std::iterator_traits<ForwardIt>::value_type;
+    std::reverse_iterator<ForwardIt> rfirst(last);
+    std::reverse_iterator<ForwardIt> rlast(first);
 
     auto i = acc::adjacent_find(
         rfirst, rlast,
@@ -245,21 +245,21 @@ namespace acc
     }
   }
 
-  template <typename BidirIt>
-  inline bool next_permutation(BidirIt first, BidirIt last)
+  template <typename ForwardIt>
+  inline bool next_permutation(ForwardIt first, ForwardIt last)
   {
     return acc::next_permutation(first, last, std::less<>{});
   }
 
   // ---------------------------------------------------------------------------
-  // prev_permutation
+  // prev_permutation (note weakened iterator category)
 
-  template <typename BidirIt, typename Compare>
-  inline bool prev_permutation(BidirIt first, BidirIt last, Compare cmp)
+  template <typename ForwardIt, typename Compare>
+  inline bool prev_permutation(ForwardIt first, ForwardIt last, Compare cmp)
   {
-    using T = typename std::iterator_traits<BidirIt>::value_type;
-    std::reverse_iterator<BidirIt> rfirst(last);
-    std::reverse_iterator<BidirIt> rlast(first);
+    using T = typename std::iterator_traits<ForwardIt>::value_type;
+    std::reverse_iterator<ForwardIt> rfirst(last);
+    std::reverse_iterator<ForwardIt> rlast(first);
 
     auto i = acc::adjacent_find(
         rfirst, rlast,
@@ -281,8 +281,8 @@ namespace acc
     }
   }
 
-  template <typename BidirIt>
-  inline bool prev_permutation(BidirIt first, BidirIt last)
+  template <typename ForwardIt>
+  inline bool prev_permutation(ForwardIt first, ForwardIt last)
   {
     return acc::prev_permutation(first, last, std::less<>{});
   }
