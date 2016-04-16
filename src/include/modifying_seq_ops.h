@@ -396,12 +396,11 @@ namespace acc
     std::advance(mid, d/2);
 
     using F = std::function<ForwardIt(ForwardIt)>;
-    using std::swap;
     auto f = acc::accumulate_iter<ForwardIt, F, std::function<F(F, ForwardIt)>>(
         first, mid, [] (ForwardIt i) { return i; },
         [&] (F a, ForwardIt b) {
           return [a = std::move(a), b] (ForwardIt i) {
-            iter_swap(i, b);
+            std::iter_swap(i, b);
             return a(++i); };
         });
     if (d&1) ++mid;
@@ -436,7 +435,7 @@ namespace acc
     acc::accumulate_iter(
         first, last, n_first,
         [&] (ForwardIt a, ForwardIt b) {
-          iter_swap(a++, b++);
+          std::iter_swap(a++, b++);
           if (a == last) {
             if (ret == first) ret = b;
             a = n_first;
