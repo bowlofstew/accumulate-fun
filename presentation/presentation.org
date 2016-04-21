@@ -10,11 +10,11 @@
 #+REVEAL_THEME: night
 #+REVEAL_HLEVEL: 1
 #+REVEAL_EXTRA_CSS: ./presentation.css
-#+REVEAL_ROOT: ../../reveal.js/
+#+REVEAL_ROOT: ../../presentations/reveal.js/
 
-# (setq org-reveal-title-slide-template "<h1>%t</h1><h2>%a</h2><h3>%e / <a href=\"http://twitter.com/ben_deane\">@ben_deane</a></h3><h2>%d</h2>")
+# (setq org-reveal-title-slide-template "<h1>%t</h1><h2>Exploring an Algorithmic Empire</h2><br/><h2>%a</h2><h3>%e / <a href=\"http://twitter.com/ben_deane\">@ben_deane</a></h3><h2>%d</h2>")
 
-#+TITLE: Desert Island Algorithms
+#+TITLE: std::accumulate
 #+AUTHOR: Ben Deane
 #+EMAIL: bdeane@blizzard.com
 #+DATE: Sometime 2016
@@ -36,7 +36,7 @@ What if you couldn't write any loops, so you're stuck with what you have?
 
 * The Algorithms (pre-C++17)
 #+REVEAL_HTML: <div id="columns"> <div id="fiveup">
-#+ATTR_REVEAL: :frag (none none none none none highlight-red none none none none none none none highlight-red none none none none none none none none none none none none none none none none none none none none highlight-red none highlight-red highlight-red none none none none none none none none none none none none none highlight-red highlight-red none none none highlight-red highlight-red none highlight-red highlight-red none none none none none none none none none none none none none none none none none none none none none none none highlight-red none none none none highlight-red) :frag_idx (1 1 1 1 1 4 1 1 1 1 1 1 1 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 4 5 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5 1 1 1 4 5 1 5 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 4)
+#+ATTR_REVEAL: :frag (none none none none none highlight-red none none none none none none none highlight-red none none none none none none none none none none none none none none none none none none none none fade-out none highlight-red highlight-red none none none none none none none none none none none none none highlight-red highlight-red none none none highlight-red highlight-red none highlight-red fade-out none none none none none none none none none none none none none none none none none none none none none none none fade-out none none none none highlight-red) :frag_idx (1 1 1 1 1 4 1 1 1 1 1 1 1 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 4 5 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5 1 1 1 4 5 1 5 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 4)
  - ~accumulate~
  - ~adjacent_difference~
  - ~adjacent_find~
@@ -207,3 +207,5 @@ logging
 foldads
 
 * binary search?
+
+* unfolds

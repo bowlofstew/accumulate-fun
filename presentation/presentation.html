@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>std::accumulate</title>
+<meta name="author" content="(Ben Deane)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="../../presentations/reveal.js/css/reveal.css"/>
+<link rel="stylesheet" href="../../presentations/reveal.js/css/theme/night.css" id="theme"/>
+<link rel="stylesheet" href="./presentation.css"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = '../../presentations/reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1>std::accumulate</h1><h2>Exploring an Algorithmic Empire</h2><br/><h2>Ben Deane</h2><h3><a href="mailto:bdeane@blizzard.com">bdeane@blizzard.com</a> / <a href="http://twitter.com/ben_deane">@ben_deane</a></h3><h2>Sometime 2016</h2>
+</section>
+
+<section>
+<section id="slide-orgheadline1">
+<h2 id="orgheadline1">The Question</h2>
+<p>
+If you were stuck on a desert island, which algorithms would you take with you?
+</p>
+<p class="fragment appear">
+Maybe some "building block" algorithms?
+</p>
+<ul>
+<li class="fragment appear"><code>partition</code></li>
+<li class="fragment appear"><code>rotate</code></li>
+<li class="fragment appear"><code>reverse</code></li>
+
+</ul>
+<p class="fragment appear">
+Maybe some others?
+</p>
+<p class="fragment appear">
+Which algorithms are the most powerful?
+</p>
+<p class="fragment appear">
+What if you couldn't write any loops, so you're stuck with what you have?
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline2">
+<h2 id="orgheadline2">The Algorithms (pre-C++17)</h2>
+<div id="columns"> <div id="fiveup">
+<ul>
+<li><code>accumulate</code></li>
+<li><code>adjacent_difference</code></li>
+<li><code>adjacent_find</code></li>
+<li><code>all_of</code></li>
+<li><code>any_of</code></li>
+<li data-fragment-index="4" class="fragment highlight-red"><code>binary_search</code></li>
+<li><code>copy</code></li>
+<li><code>copy_backward</code></li>
+<li><code>copy_if</code></li>
+<li><code>copy_n</code></li>
+<li><code>count</code></li>
+<li><code>count_if</code></li>
+<li><code>equal</code></li>
+<li data-fragment-index="4" class="fragment highlight-red"><code>equal_range</code></li>
+<li><code>fill</code></li>
+<li><code>fill_n</code></li>
+<li><code>find</code></li>
+<li><code>find_end</code></li>
+<li><code>find_first_of</code></li>
+<li><code>find_if</code></li>
+<li><code>find_if_not</code></li>
+<li><code>for_each</code></li>
+<li><code>generate</code></li>
+<li><code>generate_n</code></li>
+<li><code>includes</code></li>
+<li><code>inner_product</code></li>
+<li><code>inplace_merge</code></li>
+<li><code>iota</code></li>
+<li><code>is_heap</code></li>
+<li><code>is_heap_until</code></li>
+<li><code>is_partitioned</code></li>
+<li><code>is_permutation</code></li>
+<li><code>is_sorted</code></li>
+<li><code>is_sorted_until</code></li>
+<li data-fragment-index="2" class="fragment fade-out"><code>iter_swap</code></li>
+<li><code>lexicographical_compare</code></li>
+<li data-fragment-index="4" class="fragment highlight-red"><code>lower_bound</code></li>
+<li data-fragment-index="5" class="fragment highlight-red"><code>make_heap</code></li>
+<li><code>max</code></li>
+<li><code>max_element</code></li>
+<li><code>merge</code></li>
+<li><code>min</code></li>
+<li><code>min_element</code></li>
+<li><code>minmax</code></li>
+<li><code>minmax_element</code></li>
+<li><code>mismatch</code></li>
+<li><code>move</code></li>
+<li><code>move_backward</code></li>
+<li><code>next_permutation</code></li>
+<li><code>none_of</code></li>
+<li><code>nth_element</code></li>
+<li data-fragment-index="5" class="fragment highlight-red"><code>partial_sort</code></li>
+<li data-fragment-index="5" class="fragment highlight-red"><code>partial_sort_copy</code></li>
+<li><code>partial_sum</code></li>
+<li><code>partition</code></li>
+<li><code>partition_copy</code></li>
+<li data-fragment-index="4" class="fragment highlight-red"><code>partition_point</code></li>
+<li data-fragment-index="5" class="fragment highlight-red"><code>pop_heap</code></li>
+<li><code>prev_permutation</code></li>
+<li data-fragment-index="5" class="fragment highlight-red"><code>push_heap</code></li>
+<li data-fragment-index="3" class="fragment fade-out"><code>random_shuffle</code></li>
+<li><code>remove</code></li>
+<li><code>remove_copy</code></li>
+<li><code>remove_copy_if</code></li>
+<li><code>remove_if</code></li>
+<li><code>replace</code></li>
+<li><code>replace_copy</code></li>
+<li><code>replace_copy_if</code></li>
+<li><code>replace_if</code></li>
+<li><code>reverse</code></li>
+<li><code>reverse_copy</code></li>
+<li><code>rotate</code></li>
+<li><code>rotate_copy</code></li>
+<li><code>search</code></li>
+<li><code>search_n</code></li>
+<li><code>set_difference</code></li>
+<li><code>set_intersection</code></li>
+<li><code>set_symmetric_difference</code></li>
+<li><code>set_union</code></li>
+<li><code>shuffle</code></li>
+<li><code>sort</code></li>
+<li><code>sort_heap</code></li>
+<li><code>stable_partition</code></li>
+<li><code>stable_sort</code></li>
+<li data-fragment-index="2" class="fragment fade-out"><code>swap</code></li>
+<li><code>swap_ranges</code></li>
+<li><code>transform</code></li>
+<li><code>unique</code></li>
+<li><code>unique_copy</code></li>
+<li data-fragment-index="4" class="fragment highlight-red"><code>upper_bound</code></li>
+
+</ul>
+</div></div>
+
+<p class="fragment appear">
+Of 90 total, 77 are basically "plain loops"
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline3">
+<h2 id="orgheadline3">The Most Powerful Algorithm?</h2>
+<p class="fragment appear">
+It's not even in <code>&lt;algorithm&gt;</code>&#x2026;
+</p>
+<p class="fragment appear">
+APL calls it <code>/</code>
+</p>
+<p class="fragment appear">
+Many languages call it <code>reduce</code>
+</p>
+<p class="fragment appear">
+C++ calls it <code>accumulate</code> (or <code>reduce</code> in C++17, basically the same)
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline4">
+<h2 id="orgheadline4"><code>std::accumulate</code></h2>
+<br/>
+<div class="org-src-container">
+
+<pre  class="src src-cpp"><span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">class</span> <span style="color: #228b22;">InputIt</span>, <span style="color: #a020f0;">class</span> <span style="color: #228b22;">T</span>, <span style="color: #a020f0;">class</span> <span style="color: #228b22;">BinaryOp</span><span style="color: #707183;">&gt;</span>
+<span style="color: #228b22;">T</span> <span style="color: #0000ff;">accumulate</span><span style="color: #707183;">(</span><span style="color: #228b22;">InputIt</span> <span style="color: #a0522d;">first</span>, <span style="color: #228b22;">InputIt</span> <span style="color: #a0522d;">last</span>,
+             <span style="color: #228b22;">T</span> <span style="color: #a0522d;">init</span>, <span style="color: #228b22;">BinaryOp</span> <span style="color: #a0522d;">op</span><span style="color: #707183;">)</span>
+<span style="color: #707183;">{</span>
+  <span style="color: #a020f0;">for</span> <span style="color: #7388d6;">(</span>; first != last; ++first<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">{</span>
+    init = op<span style="color: #909183;">(</span>init, *first<span style="color: #909183;">)</span>;
+  <span style="color: #7388d6;">}</span>
+  <span style="color: #a020f0;">return</span> init;
+<span style="color: #707183;">}</span>
+</pre>
+</div>
+<br/>
+<p>
+"In the range [ <code>first</code>, <code>last</code> ], <code>binary_op</code> shall neither modify elements nor invalidate iterators or subranges."
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline5">
+<h2 id="orgheadline5">accumulate</h2>
+<p>
+with plus -&gt; sum
+with multiply -&gt; factorial
+count
+min/max
+</p>
+
+<p>
+inner<sub>product</sub>
+</p>
+
+<p>
+show generated code
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline6">
+<h2 id="orgheadline6">more accumulations</h2>
+<p>
+ditch the "shall not modify elements" proviso
+</p>
+
+<p>
+for<sub>each</sub>
+copy
+transform
+remove/replace/etc
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline7">
+<h2 id="orgheadline7">accumulate<sub>iter</sub></h2>
+<p>
+max<sub>element</sub>
+(safe form of same)
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline8">
+<h2 id="orgheadline8">surprising forms</h2>
+<p>
+shuffle
+</p>
+
+<p>
+reverse (with relaxed iterator category)
+likewise copy<sub>backward</sub>, move<sub>backward</sub>
+</p>
+
+<p>
+foldr with reverse iterators?
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline9">
+<h2 id="orgheadline9">other applications</h2>
+<p>
+functions that return bool
+functions that return int
+functions that alter a data structure (insert/remove items)
+turn binary functions into n-ary functions
+infinite streams?
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline10">
+<h2 id="orgheadline10">balanced reduction</h2>
+<p>
+McCarthy, Knuth, EoP chapter 11
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline11">
+<h2 id="orgheadline11">fold expressions?</h2>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline12">
+<h2 id="orgheadline12">tree folds?</h2>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline13">
+<h2 id="orgheadline13">heterogeneous sequences</h2>
+<p>
+logging
+foldads
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline14">
+<h2 id="orgheadline14">binary search?</h2>
+</section>
+</section>
+</div>
+</div>
+<script src="../../presentations/reveal.js/lib/js/head.min.js"></script>
+<script src="../../presentations/reveal.js/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: false,
+progress: true,
+history: true,
+center: true,
+slideNumber: 'c/t',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+width: 1200,
+height: 900,
+margin: 0.10,
+minScale: 0.50,
+maxScale: 2.50,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: '../../presentations/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: '../../presentations/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '../../presentations/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '../../presentations/reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: '../../presentations/reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
