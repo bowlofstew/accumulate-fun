@@ -36,7 +36,7 @@ What if you couldn't write any loops, so you're stuck with what you have?
 
 * The Algorithms (pre-C++17)
 #+REVEAL_HTML: <div id="columns"> <div id="fiveup">
-#+ATTR_REVEAL: :frag (none none none none none highlight-red none none none none none none none highlight-red none none none none none none none none none none none none none none none none none none none none fade-out none highlight-red highlight-red none none none none none none none none none none none none none highlight-red highlight-red none none none highlight-red highlight-red none highlight-red fade-out none none none none none none none none none none none none none none none none none none none none none none none fade-out none none none none highlight-red) :frag_idx (1 1 1 1 1 4 1 1 1 1 1 1 1 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 4 5 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5 1 1 1 4 5 1 5 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 4)
+#+ATTR_REVEAL: :frag (none none none none none highlight-red none none none none none none none highlight-red none none none none none none none none none none none none none none none none none none none none highlight-dimgrey none highlight-red highlight-red none none none none none none none none none none none none none highlight-red highlight-red none none none highlight-red highlight-red none highlight-red highlight-dimgrey none none none none none none none none none none none none none none none none none none none none none none none highlight-dimgrey none none none none highlight-red) :frag_idx (1 1 1 1 1 4 1 1 1 1 1 1 1 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 4 5 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5 1 1 1 4 5 1 5 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 4)
  - ~accumulate~
  - ~adjacent_difference~
  - ~adjacent_find~
@@ -178,7 +178,7 @@ remove/replace/etc
 
 * accumulate_iter
 max_element
-(safe form of same)
+(safe form of same using plain accumulate)
 
 * surprising forms
 shuffle
@@ -195,12 +195,30 @@ functions that alter a data structure (insert/remove items)
 turn binary functions into n-ary functions
 infinite streams?
 
-* balanced reduction
+* parallelization, balanced reduction
+monoids
 McCarthy, Knuth, EoP chapter 11
 
-* fold expressions?
-
 * tree folds?
+view "list fold" as a fold that takes two constructors
+b -> (a -> b -> b) -> [a] -> b
+two constructors correspond to:
+1. b is how to convert [] to b
+2. (a -> b -> b) is how to combine element a with existing fold result b
+
+fold for binary tree of a has similar signature:
+(a -> b) -> (b -> b -> b) -> Tree a -> a
+(a -> b) is how to convert a value a at leaf into a b
+(b -> b -> b) is how to combine two fold results (from subtrees)
+
+in general any data structure can be folded given the appropriate functions to
+convert from each disjoint state
+
+we could write fold for optional (it wouldn't be very interesting; optional is
+like a vector with a max of one element)
+
+we could write a variadic fold for variant, taking a function for each type, and
+using the variant's index to select the right function
 
 * heterogeneous sequences
 logging
@@ -209,3 +227,5 @@ foldads
 * binary search?
 
 * unfolds
+compare generate, generate_n
+possible formulations

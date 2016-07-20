@@ -1,0 +1,60 @@
+Career (20+ years) games industry programmer; generic and functional programming
+enthusiast. So I'm keen on performance (of course: C++, games) and I like using
+theory to gaining insights into practical problems. Currently a principal
+engineer at Blizzard Entertainment where I drive a lot of internal C++ learning.
+I study everything I can because the world is interesting. I've previously
+(2015) presented at C++Now and CppCon.
+
+--
+
+std::accumulate: Exploring an Algorithmic Empire
+
+What is the most powerful algorithm in the STL? In the world? There are many
+cases to be made. But this talk explores what I think is a pretty good
+candidate, which C++ calls accumulate. Tucked away in <numeric>, perhaps
+relatively unregarded when compared with workhorses like find_if and partition;
+nevertheless, accumulate is in some sense the ur-algorithm on sequences.
+
+Let's explore the result of looking at code through an accumulate-shaped lens,
+how tweaking the algorithm for better composability can unlock many more uses,
+and how it can be further genericized with applications to parallelism, tree
+structures, and heterogeneous sequences.
+
+accumulate: it's not just for adding things up!
+
+--
+
+* Introduction
+** Hunting for raw loops
+
+* Vanilla uses
+** Moving beyond sums and factorials
+** Elementary operations: count, max, min
+
+* The shape of accumulate
+** Better composability
+** Iterator category considerations
+** Code and data through the accumulate lens
+** Balanced reduction
+
+* Parallelization
+** reduce: one of the heirs of accumulate
+** Big data, mapreduce etc
+
+* Beyond vectors
+** Accumulating tree structures
+** Further genericization
+** Application to variants
+
+* Heterogeneous sequences
+** Logging as an accumulation
+** Beyond monoids
+** Genericizing logging
+
+* The dual of accumulate
+** Unfolding data structures
+** Accumulation as its own dual?
+
+* Final thoughts
+** The fruits of algorithmic perversions
+** Hunting for raw loops, redux
