@@ -2,24 +2,177 @@
 #+OPTIONS: reveal_center:t reveal_progress:t reveal_history:t reveal_control:nil
 #+OPTIONS: reveal_mathjax:t reveal_rolling_links:nil reveal_keyboard:t reveal_overview:t num:nil
 #+OPTIONS: reveal_width:1200 reveal_height:900
-#+OPTIONS: toc:nil reveal_slide_number:"c/t"
+#+OPTIONS: toc:nil <:nil timestamp:nil email:t reveal_slide_number:"c/t"
 #+REVEAL_MARGIN: 0.1
 #+REVEAL_MIN_SCALE: 0.5
 #+REVEAL_MAX_SCALE: 2.5
 #+REVEAL_TRANS: none
 #+REVEAL_THEME: night
-#+REVEAL_HLEVEL: 1
+#+REVEAL_HLEVEL: 2
 #+REVEAL_EXTRA_CSS: ./presentation.css
 #+REVEAL_ROOT: ../../presentations/reveal.js/
 
-# (setq org-reveal-title-slide-template "<h1>%t</h1><h2>Exploring an Algorithmic Empire</h2><br/><h2>%a</h2><h3>%e / <a href=\"http://twitter.com/ben_deane\">@ben_deane</a></h3><h2>%d</h2>")
+# (setq org-reveal-title-slide "<h1>%t</h1><h2>Exploring an Algorithmic Empire</h2><br/><h2>%a</h2><h3>%e / <a href=\"http://twitter.com/ben_deane\">@ben_deane</a></h3><h2>%d</h2>")
+# (setq org-reveal-title-slide 'auto)
+# see https://github.com/yjwen/org-reveal/commit/84a445ce48e996182fde6909558824e154b76985
 
 #+TITLE: std::accumulate
 #+AUTHOR: Ben Deane
 #+EMAIL: bdeane@blizzard.com
 #+DATE: Sometime 2016
 
-* The Question
+* Part 0: The Most Powerful Algorithm in the World?
+
+** A Long Time Ago, In a Galaxy etc...
+[[./powerful.png]]
+
+** A Long Time Ago, In a Galaxy etc...
+[[./another_talk.png]]
+
+* Part 1: Accumulatable Things
+
+** ~std::accumulate~
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <class InputIt, class T, class BinaryOp>
+T accumulate(InputIt first, InputIt last,
+             T init, BinaryOp op)
+{
+  for (; first != last; ++first) {
+    init = op(init, *first);
+  }
+  return init;
+}
+#+END_SRC
+
+** Typical uses
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+vector<int> v = {1,2,3,4,5};
+
+int sum = accumulate(v.cbegin(), v.cend(), 0, plus<>{});
+cout << sum << '\n';
+
+int product = accumulate(v.cbegin(), v.cend(), 1, multiplies<>{});
+cout << product << '\n';
+#+END_SRC
+#+REVEAL_HTML: <br/>
+#+ATTR_REVEAL: :frag appear
+Of course, this is not why you're here.
+What else can we accumulate?
+
+** How about finding a min or max?
+Value-based ~min_element~ or ~max_element~
+
+** What about ~bool~ values?
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+bool results[] = {true, false, true, true, false};
+
+bool all_true = accumulate(cbegin(results), cend(results),
+                           true, logical_and<>{});
+bool some_true = accumulate(cbegin(results), cend(results),
+                            false, logical_or<>{});
+bool none_true = !accumulate(cbegin(results), cend(results),
+                             false, logical_or<>{});
+#+END_SRC
+#+REVEAL_HTML: <br/>
+#+ATTR_REVEAL: :frag appear
+Not that interesting yet...
+
+** A more interesting ~bool~ case
+#+BEGIN_SRC cpp
+map<int, weak_ptr<thing>> cache;
+
+shared_ptr<thing> get_thing(int id) {
+  auto sp = cache[id].lock();
+  if (!sp) make_request(id);
+  return sp;
+}
+
+void load_things(const vector<int>& ids)
+{
+  bool all_cached = accumulate(
+    ids.cbegin(), ids.cend(), true,
+    [] (bool cached, int id) {
+      return get_thing(id) && cached;
+    });
+  if (!all_cached)
+    send_async_requests();
+}
+#+END_SRC
+
+** More things...
+ - joining strings
+ - building requests from key-value pairs
+ - merging JSON objects
+
+** Building HTTP headers: Before
+#+BEGIN_SRC cpp
+curl_slist* curl_headers = NULL;
+for (auto it = headers.begin();
+     it != headers.end(); ++it)
+{
+  curl_headers = curl_slist_append(curl_headers,
+    (boost::format("%s: %s") % it->first % it->second).str().c_str());
+}
+#+END_SRC
+
+** Building HTTP headers: After
+#+BEGIN_SRC cpp
+curl_slist* curl_headers = accumulate(
+    headers.cbegin(), headers.cend(), static_cast<curl_slist*>(nullptr),
+    [] (curl_slist* h, const auto& v) {
+        return curl_slist_append(h,
+          (boost::format("%s: %s") % it->first % it->second).str().c_str());
+      });
+#+END_SRC
+
+** What accumulate does
+ - turns binary functions into n-ary functions
+ - collects results of functions whose outputs are monoidal
+ - allows part-whole hierarchies to be treated uniformly
+ - transforms one data structure into another
+
+** Why not just write a loop?
+Two main advantages to ~accumulate~
+
+ - It's often easier to write a binary function (or unary function with monoidal output)
+ - No declaration/initialization split
+
+
+* Part 2: Parallel Computation
+
+** Monoids everywhere
+
+* Part 3: Nonlinear Structures
+
+** Recall ~std::accumulate~
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <class InputIt, class T, class BinaryOp>
+T accumulate(InputIt first, InputIt last,
+             T init, BinaryOp op);
+#+END_SRC
+
+The ~T~ here deals with an empty sequence.
+The ~BinaryOp~ deals with a non-empty sequence.
+
+**
+
+* Part 4: Heterogeneous Sequences
+
+* Part 5: The Opposite of Accumulate?
+
+** Fold? Unfold
+If ~accumulate~ is folding up a data structure to produce a value...
+
+The opposite is "unfolding" a seed value to produce a data structure.
+
+
+* Part 6: The Fruits of Algorithmic Perversions
+
+** The Question
 If you were stuck on a desert island, which algorithms would you take with you?
 #+ATTR_REVEAL: :frag appear
 Maybe some "building block" algorithms?
@@ -34,7 +187,7 @@ Which algorithms are the most powerful?
 #+ATTR_REVEAL: :frag appear
 What if you couldn't write any loops, so you're stuck with what you have?
 
-* The Algorithms (pre-C++17)
+** The Algorithms (pre-C++17)
 #+REVEAL_HTML: <div id="columns"> <div id="fiveup">
 #+ATTR_REVEAL: :frag (none none none none none highlight-red none none none none none none none highlight-red none none none none none none none none none none none none none none none none none none none none highlight-dimgrey none highlight-red highlight-red none none none none none none none none none none none none none highlight-red highlight-red none none none highlight-red highlight-red none highlight-red highlight-dimgrey none none none none none none none none none none none none none none none none none none none none none none none highlight-dimgrey none none none none highlight-red) :frag_idx (1 1 1 1 1 4 1 1 1 1 1 1 1 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 4 5 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5 1 1 1 4 5 1 5 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 4)
  - ~accumulate~
@@ -132,6 +285,35 @@ What if you couldn't write any loops, so you're stuck with what you have?
 #+ATTR_REVEAL: :frag appear
 Of 90 total, 77 are basically "plain loops"
 
+
+
+* Moving beyond sums and factorials
+* Elementary operations: count, max, min
+
+
+
+* Better composability
+* Iterator category considerations
+* Code and data through the accumulate lens
+* Balanced reduction
+
+* reduce: one of the heirs of accumulate
+* Big data, mapreduce etc
+
+* Accumulating tree structures
+* Further genericization
+* Application to variants
+
+* Logging as an accumulation
+* Beyond monoids
+* Genericizing logging
+
+* Unfolding data structures
+* Accumulation as its own dual?
+
+* The fruits of algorithmic perversions
+* Hunting for raw loops, redux
+
 * The Most Powerful Algorithm?
 #+ATTR_REVEAL: :frag appear
 It's not even in ~<algorithm>~...
@@ -141,22 +323,6 @@ APL calls it ~/~
 Many languages call it ~reduce~
 #+ATTR_REVEAL: :frag appear
 C++ calls it ~accumulate~ (or ~reduce~ in C++17, basically the same)
-
-* ~std::accumulate~
-#+REVEAL_HTML: <br/>
-#+BEGIN_SRC cpp
-template <class InputIt, class T, class BinaryOp>
-T accumulate(InputIt first, InputIt last,
-             T init, BinaryOp op)
-{
-  for (; first != last; ++first) {
-    init = op(init, *first);
-  }
-  return init;
-}
-#+END_SRC
-#+REVEAL_HTML: <br/>
-"In the range [ ~first~, ~last~ ], ~binary_op~ shall neither modify elements nor invalidate iterators or subranges."
 
 * accumulate
 with plus -> sum
@@ -223,8 +389,6 @@ using the variant's index to select the right function
 * heterogeneous sequences
 logging
 foldads
-
-* binary search?
 
 * unfolds
 compare generate, generate_n
