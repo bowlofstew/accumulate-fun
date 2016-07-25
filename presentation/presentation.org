@@ -6,8 +6,8 @@
 #+REVEAL_MARGIN: 0.1
 #+REVEAL_MIN_SCALE: 0.5
 #+REVEAL_MAX_SCALE: 2.5
-#+REVEAL_TRANS: none
-#+REVEAL_THEME: night
+#+REVEAL_TRANS: slide
+#+REVEAL_THEME: solarized
 #+REVEAL_HLEVEL: 2
 #+REVEAL_EXTRA_CSS: ./presentation.css
 #+REVEAL_ROOT: ../../presentations/reveal.js/
@@ -63,6 +63,20 @@ What else can we accumulate?
 
 ** How about finding a min or max?
 Value-based ~min_element~ or ~max_element~
+#+BEGIN_SRC cpp
+template <typename It, typename Compare,
+          typename T = typename std::iterator_traits<It>::value_type>
+T min_element(It first, It last, Compare cmp)
+{
+  // precondition: first != last
+  auto init = *first;
+  return accumulate(
+      ++first, last, init,
+      [&] (const T& a, const T& b) {
+        return cmp(b, a) ? b : a;
+      });
+}
+#+END_SRC
 
 ** What about ~bool~ values?
 #+REVEAL_HTML: <br/>
@@ -80,13 +94,22 @@ bool none_true = !accumulate(cbegin(results), cend(results),
 #+ATTR_REVEAL: :frag appear
 Not that interesting yet...
 
+** The signature of the function
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+Ret fun(const Type1 &a, const Type2 &b);
+#+END_SRC
+So far, we've looked at ~Type1~ and ~Type2~ being the same.
+
+Things get more interesting when they differ.
+
 ** A more interesting ~bool~ case
 #+BEGIN_SRC cpp
 map<int, weak_ptr<thing>> cache;
 
 shared_ptr<thing> get_thing(int id) {
   auto sp = cache[id].lock();
-  if (!sp) make_request(id);
+  if (!sp) make_async_request(id);
   return sp;
 }
 
@@ -98,14 +121,28 @@ void load_things(const vector<int>& ids)
       return get_thing(id) && cached;
     });
   if (!all_cached)
-    send_async_requests();
+    service_async_requests();
 }
 #+END_SRC
+
+** ~bool~ As the Result
+We use many function results as boolean values in control flow.
+
+ - actual ~bool~
+ - pointers
+ - zero-result of a comparison trichotomy
+ - anywhere else we want to write ~if (x)~
+
+This means we can use ~accumulate~ to collect these function values. (Similar to
+~all_of~, ~any_of~, ~none_of~, but where we don't want the short-circuiting
+behavior.)
 
 ** More things...
  - joining strings
  - building requests from key-value pairs
  - merging JSON objects
+
+What do all of these have in common?
 
 ** Building HTTP headers: Before
 #+BEGIN_SRC cpp
@@ -114,7 +151,7 @@ for (auto it = headers.begin();
      it != headers.end(); ++it)
 {
   curl_headers = curl_slist_append(curl_headers,
-    (boost::format("%s: %s") % it->first % it->second).str().c_str());
+    (format("%s: %s") % it->first % it->second).str().c_str());
 }
 #+END_SRC
 
@@ -124,11 +161,11 @@ curl_slist* curl_headers = accumulate(
     headers.cbegin(), headers.cend(), static_cast<curl_slist*>(nullptr),
     [] (curl_slist* h, const auto& v) {
         return curl_slist_append(h,
-          (boost::format("%s: %s") % it->first % it->second).str().c_str());
+          (format("%s: %s") % it->first % it->second).str().c_str());
       });
 #+END_SRC
 
-** What accumulate does
+** What ~accumulate~ Can Do
  - turns binary functions into n-ary functions
  - collects results of functions whose outputs are monoidal
  - allows part-whole hierarchies to be treated uniformly
@@ -158,7 +195,6 @@ T accumulate(InputIt first, InputIt last,
 The ~T~ here deals with an empty sequence.
 The ~BinaryOp~ deals with a non-empty sequence.
 
-**
 
 * Part 4: Heterogeneous Sequences
 
