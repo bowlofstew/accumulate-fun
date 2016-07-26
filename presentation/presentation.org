@@ -62,6 +62,16 @@ Of course, this is not why you're here.
 What else can we accumulate?
 
 ** How about finding a min or max?
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+vector<unsigned> v = {1,2,3,4,5};
+
+unsigned max_val = accumulate(v.cbegin(), v.cend(), 0,
+    [] (unsigned a, unsigned b) { return a > b ? a : b; });
+cout << max_val << '\n';
+#+END_SRC
+
+** How about finding a min or max?
 Value-based ~min_element~ or ~max_element~
 #+BEGIN_SRC cpp
 template <typename It, typename Compare,
@@ -99,11 +109,13 @@ Not that interesting yet...
 #+BEGIN_SRC cpp
 Ret fun(const Type1 &a, const Type2 &b);
 #+END_SRC
+#+ATTR_REVEAL: :frag appear
 So far, we've looked at ~Type1~ and ~Type2~ being the same.
-
+#+ATTR_REVEAL: :frag appear
 Things get more interesting when they differ.
 
 ** A more interesting ~bool~ case
+#+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
 map<int, weak_ptr<thing>> cache;
 
@@ -133,6 +145,7 @@ We use many function results as boolean values in control flow.
  - zero-result of a comparison trichotomy
  - anywhere else we want to write ~if (x)~
 
+#+ATTR_REVEAL: :frag appear
 This means we can use ~accumulate~ to collect these function values. (Similar to
 ~all_of~, ~any_of~, ~none_of~, but where we don't want the short-circuiting
 behavior.)
@@ -141,10 +154,27 @@ behavior.)
  - joining strings
  - building requests from key-value pairs
  - merging JSON objects
+ - composing textures
 
+#+ATTR_REVEAL: :frag appear
 What do all of these have in common?
 
+** You All Remember Monoids?
+A set of objects and an operation such that:
+ - The operation is closed over the set
+ - The operation is associative
+ - There is an identity element
+
+#+ATTR_REVEAL: :frag appear
+Monoids are everywhere, and any monoid can be accumulated:
+#+ATTR_REVEAL: :frag (appear)
+ - addition on integers
+ - concatenation on strings
+ - union on sets
+ - composition of textures
+
 ** Building HTTP headers: Before
+#+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
 curl_slist* curl_headers = NULL;
 for (auto it = headers.begin();
@@ -156,6 +186,7 @@ for (auto it = headers.begin();
 #+END_SRC
 
 ** Building HTTP headers: After
+#+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
 curl_slist* curl_headers = accumulate(
     headers.cbegin(), headers.cend(), static_cast<curl_slist*>(nullptr),
@@ -165,24 +196,73 @@ curl_slist* curl_headers = accumulate(
       });
 #+END_SRC
 
-** What ~accumulate~ Can Do
- - turns binary functions into n-ary functions
- - collects results of functions whose outputs are monoidal
- - allows part-whole hierarchies to be treated uniformly
- - transforms one data structure into another
+** More Monoid Observations
+#+ATTR_REVEAL: :frag appear
+A type can be a monoid in more than one way (under more than one operation).
+#+ATTR_REVEAL: :frag appear
+A function that returns a monoid is a monoid.
+#+ATTR_REVEAL: :frag appear
+An aggregate of monoids is a monoid.
 
 ** Why not just write a loop?
-Two main advantages to ~accumulate~
+Some advantages to ~accumulate~
 
- - It's often easier to write a binary function (or unary function with monoidal output)
+#+ATTR_REVEAL: :frag (appear)
  - No declaration/initialization split
+ - It's often easier to write a binary function
+   - or unary function with monoidal output
+ - Incremental computation
+ - Potential for parallel computation
 
+** What ~accumulate~ Can Do
+#+ATTR_REVEAL: :frag (appear)
+ - Turn binary functions into n-ary functions
+ - Collect results of functions whose outputs are monoidal
+ - Transform one data structure into another
+ - Allow part-whole hierarchies to be treated uniformly
+   - which unlocks parallel computation
 
 * Part 2: Parallel Computation
 
-** Monoids everywhere
+** Diagrams 1
+** Diagrams 2
+
+** ~std::reduce~
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <class InputIt, class T, class BinaryOp>
+T reduce(InputIt first, InputIt last,
+         T init, BinaryOp op);
+#+END_SRC
+#+ATTR_REVEAL: :frag appear
+The same as ~accumulate~, except the collection may be processed in parallel.
+#+ATTR_REVEAL: :frag appear
+This works because of associativity (semigroup property).
+#+ATTR_REVEAL: :frag appear
+We lose the type variation, but gain parallelism.
+
+** Big Data Monoids Everywhere
+#+ATTR_REVEAL: :frag (appear)
+ - histograms
+ - top-N calculations
+ - computing averages
+ - gaussian distributions
+ - bloom filters
+ - count-min sketch
+ - hyperloglog
 
 * Part 3: Nonlinear Structures
+
+** ~accumulate~ Works on Linear Sequences
+
+How would we make it work on multi-dimensional structures?
+#+ATTR_REVEAL: :frag appear
+Maybe we can define a linear traversal on the structure...
+ - in-order, pre-order, post-order
+#+ATTR_REVEAL: :frag appear
+But the nodes are still homogeneous...
+#+ATTR_REVEAL: :frag appear
+What if it's a bit more complex? (Like say, a JSON object?)
 
 ** Recall ~std::accumulate~
 #+REVEAL_HTML: <br/>
@@ -193,8 +273,54 @@ T accumulate(InputIt first, InputIt last,
 #+END_SRC
 
 The ~T~ here deals with an empty sequence.
+
 The ~BinaryOp~ deals with a non-empty sequence.
 
+** Recursive Definition of a ~vector~
+We can view "sequence accumulation" as handling two cases:
+ - an empty ~vector~
+ - a ~vector~ consisting of an element plus another ~vector~
+
+This is the sort of recursive definition we find in functional languages. And
+it's the key to accumulating other data structures.
+
+** ~std::accumulate~ Viewed Recursively
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <typename FwdIt, typename EmptyOp, typename NonEmptyOp>
+auto recursive_accumulate(FwdIt first, FwdIt last,
+                          EmptyOp op1, NonEmptyOp op2)
+{
+  if (first == last) return op1();
+  return op2(*first, recursive_accumulate(first+1, last, op1, op2));
+}
+#+END_SRC
+#+ATTR_REVEAL: :frag appear
+~T~ (here ~EmptyOp~) is really a function from empty ~vector~ to ~T~
+#+ATTR_REVEAL: :frag appear
+~BinaryOp~ (here ~NonEmptyOp~) is really a function from (element, accumulation of ~vector~) to
+~T~
+
+** How to Accumulate a ~variant~
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+using JSONValue = variant<double,
+                          string,
+                          bool,
+                          nullptr_t,
+                          vector<JSONValue*>,
+                          map<string, JSONValue*>>;
+#+END_SRC
+We need a function for each distinct type that can be inside the ~variant~.
+
+** A Simple Example
+Compute the "depth" of a JSON object.
+
+** Generic variant accumulation
+TODO
+
+** Balanced reduction
+TODO
 
 * Part 4: Heterogeneous Sequences
 
@@ -205,8 +331,23 @@ If ~accumulate~ is folding up a data structure to produce a value...
 
 The opposite is "unfolding" a seed value to produce a data structure.
 
+** How To Unfold
+TODO
+The signature of unfold (choice between termination conditions)
+General form is to append a sequence not just a value
 
-* Part 6: The Fruits of Algorithmic Perversions
+
+** Fold and Unfold are Really the Same
+Just transformations on a data structure.
+
+Which you use is a matter of convenience.
+
+We think of ~accumulate~ as working on structures and producing values, and
+~unfold~ vice versa.
+
+But structures are themselves values.
+
+* Postscript: The Fruits of Algorithmic Perversions
 
 ** The Question
 If you were stuck on a desert island, which algorithms would you take with you?
@@ -321,6 +462,40 @@ What if you couldn't write any loops, so you're stuck with what you have?
 #+ATTR_REVEAL: :frag appear
 Of 90 total, 77 are basically "plain loops"
 
+** Why Doesn't ~accumulate~ Work on Iterators?
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <class InputIt, class T, class BinaryOp>
+T accumulate(InputIt first, InputIt last,
+             T init, BinaryOp op)
+{
+  for (; first != last; ++first) {
+    init = op(init, *first);
+  }
+  return init;
+}
+#+END_SRC
+
+** Why Doesn't ~accumulate~ Work on Iterators?
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <class InputIt, class T, class BinaryOp>
+T accumulate(InputIt first, InputIt last,
+             T init, BinaryOp op)
+{
+  for (; first != last; ++first) {
+    init = op(init, first);
+  }
+  return init;
+}
+#+END_SRC
+
+* Summary
+
+** Further reading
+Add ALL the Things
+
+** Summary
 
 
 * Moving beyond sums and factorials
