@@ -20,10 +20,12 @@
 }
 
 #columns ul {
-  width:1300px;
+    width:1300px;
+    height:600px;
   overflow:hidden;
 }
 #columns li {
+    height: 30px;
   float:left;
   display:inline;
 }

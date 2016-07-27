@@ -29,6 +29,13 @@
 ** A Long Time Ago, In a Galaxy etc...
 [[./another_talk.png]]
 
+** Nomenclature note
+I'll try to talk "in C++" for this talk.
+
+But I may occasionally say "fold" when I mean "accumulate" or "reduce".
+
+Don't worry... this talk isn't FP-heavy.
+
 * Part 1: Accumulatable Things
 
 ** ~std::accumulate~
@@ -139,7 +146,6 @@ void load_things(const vector<int>& ids)
 
 ** ~bool~ As the Result
 We use many function results as boolean values in control flow.
-
  - actual ~bool~
  - pointers
  - zero-result of a comparison trichotomy
@@ -224,8 +230,11 @@ Some advantages to ~accumulate~
 
 * Part 2: Parallel Computation
 
-** Diagrams 1
-** Diagrams 2
+** Distributed Accumulate
+[[./distributed_add.svg]]
+
+** Distributed Accumulate
+[[./distributed_average.svg]]
 
 ** ~std::reduce~
 #+REVEAL_HTML: <br/>
@@ -254,11 +263,10 @@ We lose the type variation, but gain parallelism.
 * Part 3: Nonlinear Structures
 
 ** ~accumulate~ Works on Linear Sequences
-
 How would we make it work on multi-dimensional structures?
 #+ATTR_REVEAL: :frag appear
-Maybe we can define a linear traversal on the structure...
- - in-order, pre-order, post-order
+Maybe we can define a linear traversal on the structure (in-order, pre-order,
+post-order)...
 #+ATTR_REVEAL: :frag appear
 But the nodes are still homogeneous...
 #+ATTR_REVEAL: :frag appear
@@ -298,54 +306,302 @@ auto recursive_accumulate(FwdIt first, FwdIt last,
 #+ATTR_REVEAL: :frag appear
 ~T~ (here ~EmptyOp~) is really a function from empty ~vector~ to ~T~
 #+ATTR_REVEAL: :frag appear
-~BinaryOp~ (here ~NonEmptyOp~) is really a function from (element, accumulation of ~vector~) to
+~BinaryOp~ (here ~NonEmptyOp~) is really a function from (element, ~vector~) to
 ~T~
 
-** How to Accumulate a ~variant~
+** Accumulating a ~variant~
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
-using JSONValue = variant<double,
+struct JSONWrapper;
+using JSONArray = vector<JSONWrapper>;
+using JSONObject = map<string, JSONWrapper>;
+using JSONValue = variant<bool,
+                          double,
                           string,
-                          bool,
                           nullptr_t,
-                          vector<JSONValue*>,
-                          map<string, JSONValue*>>;
+                          JSONArray,
+                          JSONObject>;
+struct JSONWrapper
+{
+  JSONValue v;
+  operator JSONValue&() { return v; }
+  operator const JSONValue&() const { return v; }
+};
 #+END_SRC
+
+** Example: Render a ~JSONValue~ as a ~string~
 We need a function for each distinct type that can be inside the ~variant~.
+#+BEGIN_SRC cpp
+string render_json_value(const JSONValue& jsv);
 
-** A Simple Example
-Compute the "depth" of a JSON object.
+string render_bool(bool b) { return b ? "true" : "false"; };
+string render_double(double d) { return to_string(d); };
+string render_string(const string& s)
+{
+  stringstream ss;
+  ss << quoted(s);
+  return ss.str();
+}
+string render_null(nullptr_t) { return "null"; }
+#+END_SRC
 
-** Generic variant accumulation
-TODO
+** Example: Render a ~JSONValue~ as a ~string~
+We need a function for each distinct type that can be inside the ~variant~.
+#+BEGIN_SRC cpp
+string render_array(const JSONArray& a)
+{
+  return string{"["}
+    + join(a.cbegin(), a.cend(), string{","},
+           [] (const JSONValue& jsv) {
+             return render_json_value(jsv);
+           })
+    + "]";
+}
+#+END_SRC
+
+** Example: Render a ~JSONValue~ as a ~string~
+We need a function for each distinct type that can be inside the ~variant~.
+#+BEGIN_SRC cpp
+string render_object(const JSONObject& o)
+{
+  return string{"{"}
+    + join(o.cbegin(), o.cend(), string{","},
+           [] (const JSONObject::value_type& jsv) {
+             return render_string(jsv.first) + ":"
+               + render_json_value(jsv.second);
+           })
+    + "}";
+}
+#+END_SRC
+
+** Example: Render a ~JSONValue~ as a ~string~
+We need a function for each distinct type that can be inside the ~variant~.
+#+BEGIN_SRC cpp
+string render_json_value(const JSONValue& jsv)
+{
+  return fold(jsv,
+              render_bool, render_double, render_string,
+              render_null, render_array, render_object);
+}
+#+END_SRC
+
+** A Generic ~fold~ for ~variant~
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <typename... Ts, typename... Fs>
+auto fold(const variant<Ts...>& v, Fs&&... fs)
+{
+  static_assert(sizeof...(Ts) == sizeof...(Fs),
+                "Not enough functions provided to variant fold");
+  return fold_at<0, sizeof...(Ts)>::apply(
+      v, v.index(),
+      std::forward<Fs>(fs)...);
+}
+#+END_SRC
+A ~variant~, and N functions (one for each case of the ~variant~).
+
+Recall that the "zero value" is implicit in the functions if required.
+
+** A Generic ~fold~ for ~variant~
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <typename T, typename F, typename... Fs>
+static auto fold_at(T&& t, size_t n, F&& f, Fs&&... fs)
+{
+  using R = decltype(f(get<0>(t)));
+  return apply_at<0, sizeof...(Fs)+1>::template apply<R, T, F, Fs...>(
+      std::forward<T>(t),
+      n,
+      std::forward<F>(f),
+      std::forward<Fs>(fs)...);
+}
+#+END_SRC
+
+** A Generic ~fold~ for ~variant~
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <size_t N, size_t Max>
+struct apply_at
+{
+  template <typename R, typename T, typename F, typename... Fs>
+  static auto apply(T&& t, size_t n, F&& f, Fs&&... fs)
+  {
+    if (n == N)
+      return std::forward<F>(f)(get<N>(std::forward<T>(t)));
+    else
+      return apply_at<N+1, Max>::template apply<R, T, Fs...>(
+          std::forward<T>(t),
+          n,
+          std::forward<Fs>(fs)...);
+  }
+};
+#+END_SRC
+
+** A Generic ~fold~ for ~variant~
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <size_t Max>
+struct apply_at<Max, Max>
+{
+  template <typename R, typename T, typename... Fs>
+  static auto apply(T, size_t, Fs...)
+  {
+    assert("Variant index out of range" && false);
+    return R{};
+  }
+};
+#+END_SRC
+
+** Generic ~variant~ accumulation
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <typename... Ts, typename... Fs>
+auto fold(const variant<Ts...>& v, Fs&&... fs)
+#+END_SRC
+Hmm, this looks a lot like visitation.
+
+** Recursive reduction
+Any recursively-specified data structure can be accumulated using visitation to
+produce a monoidal value which is accumulated
+#+ATTR_REVEAL: :frag (appear)
+ - tree -> string rendering
+ - depth, fringe of trees
+ - lighting contributions
+ - frustum culling
 
 ** Balanced reduction
 TODO
 
 * Part 4: Heterogeneous Sequences
 
+** Foldads
+TODO
+
 * Part 5: The Opposite of Accumulate?
 
 ** Fold? Unfold
 If ~accumulate~ is folding up a data structure to produce a value...
-
+#+ATTR_REVEAL: :frag appear
 The opposite is "unfolding" a seed value to produce a data structure.
 
 ** How To Unfold
-TODO
-The signature of unfold (choice between termination conditions)
-General form is to append a sequence not just a value
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <typename InputIt, typename T, typename F>
+T accumulate(InputIt first, InputIt last, T init, F f);
 
+template <typename FwdIt, typename T, typename F>
+FwdIt unfold(F f, FwdIt it, T init);
+#+END_SRC
+~F~ will be repeatedly called with a "reducing" ~T~ value and write the result(s)
+to ~it~.
+
+#+ATTR_REVEAL: :frag (appear)
+ - What should the signature of F be?
+ - How do we know when we're done?
+
+** Signature of the Function Passed to ~unfold~
+F is the opposite of ~accumulate~'s BinaryOp
+
+#+ATTR_REVEAL: :frag appear
+It's clear that ~F~ needs to return a ~pair~
+#+ATTR_REVEAL: :frag (appear)
+ * result to write into the iterator
+ * new value of ~T~ to feed into next invocation of ~F~
+
+#+ATTR_REVEAL: :frag appear
+In general the "result to write to the iterator" may be a range or sequence of
+values.
+
+** Three Choices for ~unfold~ Termination
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+// 1. provide a sentinel value of type T
+template <typename FwdIt, typename T, typename F>
+FwdIt unfold(F f, FwdIt it, T init, T term);
+#+END_SRC
+
+** Three Choices for ~unfold~ Termination
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+// 2. provide a sentinel value of type (other thing returned by F)
+template <typename FwdIt, typename T, typename F, typename U>
+FwdIt unfold(F f, FwdIt it, T init, U term);
+#+END_SRC
+
+** Three Choices for ~unfold~ Termination
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+// 3. F will return an optional
+template <typename FwdIt, typename T, typename F>
+FwdIt unfold(F f, FwdIt it, T init);
+#+END_SRC
+
+** How To Unfold
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <typename FwdIt, typename T, typename F>
+FwdIt unfold(F f, FwdIt it, T init)
+{
+  T t{std::forward<T>(init)};
+  for (auto o = f(t); o; o = f(o->second)) {
+    it = std::move(std::begin(o->first), std::end(o->first), it);
+  }
+  return it;
+}
+#+END_SRC
+~F~ returns ~optional<pair<range, T>>~
+
+** Unfold Example
+#+BEGIN_SRC cpp -n
+optional<pair<string, int>> to_roman(int n)
+{
+  if (n >= 1000) return {{ "M", n-1000 }};
+  if (n >= 900) return {{ "CM", n-900 }};
+  if (n >= 500) return {{ "D", n-500 }};
+  if (n >= 400) return {{ "CD", n-400 }};
+  if (n >= 100) return {{ "C", n-100 }};
+  if (n >= 90) return {{ "XC", n-90 }};
+  if (n >= 50) return {{ "L", n-50 }};
+  if (n >= 40) return {{ "XL", n-40 }};
+  if (n >= 10) return {{ "X", n-10 }};
+  if (n >= 9) return {{ "IX", n-9 }};
+  if (n >= 5) return {{ "V", n-5 }};
+  if (n >= 4) return {{ "IV", n-4 }};
+  if (n >= 1) return {{ "I", n-1 }};
+  return nullopt;
+}
+#+END_SRC
+
+** Unfold Example
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+int main()
+{
+  string r;
+  unfold(to_roman, back_inserter(r), 1729);
+  cout << r << '\n';
+}
+#+END_SRC
+#+BEGIN_SRC bash
+$ ./a.out
+MDCCXXIX
+$
+#+END_SRC
 
 ** Fold and Unfold are Really the Same
 Just transformations on a data structure.
-
+#+ATTR_REVEAL: :frag appear
 Which you use is a matter of convenience.
-
+#+ATTR_REVEAL: :frag appear
 We think of ~accumulate~ as working on structures and producing values, and
 ~unfold~ vice versa.
+#+ATTR_REVEAL: :frag appear
+But structures are themselves values...
 
-But structures are themselves values.
+#+BEGIN_NOTES
+Compare ~generate~, ~generate_n~
+#+END_NOTES
 
 * Postscript: The Fruits of Algorithmic Perversions
 
@@ -366,7 +622,7 @@ What if you couldn't write any loops, so you're stuck with what you have?
 
 ** The Algorithms (pre-C++17)
 #+REVEAL_HTML: <div id="columns"> <div id="fiveup">
-#+ATTR_REVEAL: :frag (none none none none none highlight-red none none none none none none none highlight-red none none none none none none none none none none none none none none none none none none none none highlight-dimgrey none highlight-red highlight-red none none none none none none none none none none none none none highlight-red highlight-red none none none highlight-red highlight-red none highlight-red highlight-dimgrey none none none none none none none none none none none none none none none none none none none none none none none highlight-dimgrey none none none none highlight-red) :frag_idx (1 1 1 1 1 4 1 1 1 1 1 1 1 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 4 5 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5 1 1 1 4 5 1 5 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 4)
+#+ATTR_REVEAL: :frag (none none none none none highlight-red none none none none none none none highlight-red none none none none none none none none none none none none none none none none none none none none fade-out none highlight-red highlight-red none none none none none none none none none none none none none highlight-red highlight-red none none none highlight-red highlight-red none highlight-red fade-out none none none none none none none none none none none none none none none none none none none none none none none fade-out none none none none highlight-red) :frag_idx (1 1 1 1 1 4 1 1 1 1 1 1 1 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 4 5 1 1 1 1 1 1 1 1 1 1 1 1 1 5 5 1 1 1 4 5 1 5 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 4)
  - ~accumulate~
  - ~adjacent_difference~
  - ~adjacent_find~
@@ -490,6 +746,9 @@ T accumulate(InputIt first, InputIt last,
 }
 #+END_SRC
 
+** Hunting for Raw Loops, Redux
+
+
 * Summary
 
 ** Further reading
@@ -498,44 +757,34 @@ Add ALL the Things
 ** Summary
 
 
-* Moving beyond sums and factorials
-* Elementary operations: count, max, min
+#+BEGIN_NOTES
+Moving beyond sums and factorials
+Elementary operations: count, max, min
+Better composability
+Iterator category considerations
+Code and data through the accumulate lens
+Balanced reduction
+reduce: one of the heirs of accumulate
+Big data, mapreduce etc
+Accumulating tree structures
+Further genericization
+Application to variants
+Logging as an accumulation
+Beyond monoids
+Genericizing logging
 
+Unfolding data structures
+Accumulation as its own dual?
+The fruits of algorithmic perversions
+Hunting for raw loops, redux
 
-
-* Better composability
-* Iterator category considerations
-* Code and data through the accumulate lens
-* Balanced reduction
-
-* reduce: one of the heirs of accumulate
-* Big data, mapreduce etc
-
-* Accumulating tree structures
-* Further genericization
-* Application to variants
-
-* Logging as an accumulation
-* Beyond monoids
-* Genericizing logging
-
-* Unfolding data structures
-* Accumulation as its own dual?
-
-* The fruits of algorithmic perversions
-* Hunting for raw loops, redux
-
-* The Most Powerful Algorithm?
-#+ATTR_REVEAL: :frag appear
+The Most Powerful Algorithm?
 It's not even in ~<algorithm>~...
-#+ATTR_REVEAL: :frag appear
 APL calls it ~/~
-#+ATTR_REVEAL: :frag appear
 Many languages call it ~reduce~
-#+ATTR_REVEAL: :frag appear
 C++ calls it ~accumulate~ (or ~reduce~ in C++17, basically the same)
 
-* accumulate
+accumulate
 with plus -> sum
 with multiply -> factorial
 count
@@ -545,7 +794,7 @@ inner_product
 
 show generated code
 
-* more accumulations
+more accumulations
 ditch the "shall not modify elements" proviso
 
 for_each
@@ -553,11 +802,11 @@ copy
 transform
 remove/replace/etc
 
-* accumulate_iter
+accumulate_iter
 max_element
 (safe form of same using plain accumulate)
 
-* surprising forms
+surprising forms
 shuffle
 
 reverse (with relaxed iterator category)
@@ -565,18 +814,18 @@ likewise copy_backward, move_backward
 
 foldr with reverse iterators?
 
-* other applications
+other applications
 functions that return bool
 functions that return int
 functions that alter a data structure (insert/remove items)
 turn binary functions into n-ary functions
 infinite streams?
 
-* parallelization, balanced reduction
+parallelization, balanced reduction
 monoids
 McCarthy, Knuth, EoP chapter 11
 
-* tree folds?
+tree folds?
 view "list fold" as a fold that takes two constructors
 b -> (a -> b -> b) -> [a] -> b
 two constructors correspond to:
@@ -597,10 +846,11 @@ like a vector with a max of one element)
 we could write a variadic fold for variant, taking a function for each type, and
 using the variant's index to select the right function
 
-* heterogeneous sequences
+heterogeneous sequences
 logging
 foldads
 
-* unfolds
+unfolds
 compare generate, generate_n
 possible formulations
+#+END_NOTES
