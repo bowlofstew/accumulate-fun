@@ -7,7 +7,7 @@
 #+REVEAL_MIN_SCALE: 0.5
 #+REVEAL_MAX_SCALE: 2.5
 #+REVEAL_TRANS: slide
-#+REVEAL_THEME: solarized
+#+REVEAL_THEME: night
 #+REVEAL_HLEVEL: 2
 #+REVEAL_EXTRA_CSS: ./presentation.css
 #+REVEAL_ROOT: ../../presentations/reveal.js/
@@ -19,9 +19,10 @@
 #+TITLE: std::accumulate
 #+AUTHOR: Ben Deane
 #+EMAIL: bdeane@blizzard.com
-#+DATE: Sometime 2016
+#+DATE: 29th July 2016
 
-* Part 0: The Most Powerful Algorithm in the World?
+* Part 0
+The Most Powerful Algorithm in the World?
 
 ** A Long Time Ago, In a Galaxy etc...
 [[./powerful.png]]
@@ -29,14 +30,19 @@
 ** A Long Time Ago, In a Galaxy etc...
 [[./another_talk.png]]
 
+** Another Talk
+
+This is that talk.
+
 ** Nomenclature note
 I'll try to talk "in C++" for this talk.
 
 But I may occasionally say "fold" when I mean "accumulate" or "reduce".
 
-Don't worry... this talk isn't FP-heavy.
+Don't worry... this talk isn't FP-heavy. There's no Haskell code.
 
-* Part 1: Accumulatable Things
+* Part 1
+Accumulatable Things
 
 ** ~std::accumulate~
 #+REVEAL_HTML: <br/>
@@ -51,6 +57,17 @@ T accumulate(InputIt first, InputIt last,
   return init;
 }
 #+END_SRC
+
+#+BEGIN_NOTES
+Our friend accumulate.
+
+One thing to notice: it looks like there are a lot of copies going on here. In
+fact compilers are pretty good at optimizing these away.
+
+I took a look at this with an instrumented class that counts copies, moves, etc,
+and compared it to a version that used explicit moves: there was no difference
+except in the single copy of the passed-in init value.
+#+END_NOTES
 
 ** Typical uses
 #+REVEAL_HTML: <br/>
@@ -68,6 +85,10 @@ cout << product << '\n';
 Of course, this is not why you're here.
 What else can we accumulate?
 
+#+BEGIN_NOTES
+This is what many people think accumulate is for. And not much else?
+#+END_NOTES
+
 ** How about finding a min or max?
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
@@ -77,6 +98,10 @@ unsigned max_val = accumulate(v.cbegin(), v.cend(), 0,
     [] (unsigned a, unsigned b) { return a > b ? a : b; });
 cout << max_val << '\n';
 #+END_SRC
+
+#+BEGIN_NOTES
+Are you convinced that this will find the maximum value?
+#+END_NOTES
 
 ** How about finding a min or max?
 Value-based ~min_element~ or ~max_element~
@@ -95,6 +120,12 @@ T min_element(It first, It last, Compare cmp)
 }
 #+END_SRC
 
+#+BEGIN_NOTES
+How about this finding the min value?
+
+Note the use of the Compare function. Why did I write it this way?
+#+END_NOTES
+
 ** What about ~bool~ values?
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
@@ -111,10 +142,17 @@ bool none_true = !accumulate(cbegin(results), cend(results),
 #+ATTR_REVEAL: :frag appear
 Not that interesting yet...
 
+#+BEGIN_NOTES
+Well.. this is just like all_of, any_of, none_of.
+
+Except without the nice shortcut behaviour. Why would we do this? This isn't
+very interesting as it stands.
+#+END_NOTES
+
 ** The signature of the function
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
-Ret fun(const Type1 &a, const Type2 &b);
+Type1 fun(const Type1 &a, const Type2 &b);
 #+END_SRC
 #+ATTR_REVEAL: :frag appear
 So far, we've looked at ~Type1~ and ~Type2~ being the same.
@@ -144,8 +182,17 @@ void load_things(const vector<int>& ids)
 }
 #+END_SRC
 
+#+BEGIN_NOTES
+A simple cache inspired by Herb Sutter's favorite 10 lines of code.
+
+We don't want to shortcut here. We want to enumerate all the things.
+
+Note the order of args to &&.
+#+END_NOTES
+
 ** ~bool~ As the Result
 We use many function results as boolean values in control flow.
+#+ATTR_REVEAL: :frag (appear)
  - actual ~bool~
  - pointers
  - zero-result of a comparison trichotomy
@@ -156,14 +203,25 @@ This means we can use ~accumulate~ to collect these function values. (Similar to
 ~all_of~, ~any_of~, ~none_of~, but where we don't want the short-circuiting
 behavior.)
 
+#+BEGIN_NOTES
+We use a lot of things as bools.
+#+END_NOTES
+
 ** More things...
+#+ATTR_REVEAL: :frag (appear)
  - joining strings
  - building requests from key-value pairs
  - merging JSON objects
- - composing textures
+ - multiplying matrices
 
 #+ATTR_REVEAL: :frag appear
 What do all of these have in common?
+
+#+BEGIN_NOTES
+What indeed?
+
+They can all be accumulated?
+#+END_NOTES
 
 ** You All Remember Monoids?
 A set of objects and an operation such that:
@@ -171,13 +229,33 @@ A set of objects and an operation such that:
  - The operation is associative
  - There is an identity element
 
-#+ATTR_REVEAL: :frag appear
+#+BEGIN_NOTES
+"Monoid Fan"
+
+"I <3 monoids"
+#+END_NOTES
+
+** Monoids Are Everywhere!
 Monoids are everywhere, and any monoid can be accumulated:
 #+ATTR_REVEAL: :frag (appear)
  - addition on integers
  - concatenation on strings
  - union on sets
- - composition of textures
+ - "merging" objects of all kinds
+ - max, min, and, or, ...
+ - parsing
+ - many more things...
+
+#+BEGIN_NOTES
+ - Parsing: mempty = fail, a `mappend` b = try a <|> b
+ - Applying AI behaviours
+ - Summing vectors
+ - Composing bitmaps
+ - Set intersections
+ - optional
+
+Simeon's JSON objects.
+#+END_NOTES
 
 ** Building HTTP headers: Before
 #+REVEAL_HTML: <br/>
@@ -191,6 +269,12 @@ for (auto it = headers.begin();
 }
 #+END_SRC
 
+#+BEGIN_NOTES
+A raw loop.
+
+In fact it's OK for the headers to be null here.
+#+END_NOTES
+
 ** Building HTTP headers: After
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
@@ -202,13 +286,49 @@ curl_slist* curl_headers = accumulate(
       });
 #+END_SRC
 
+#+BEGIN_NOTES
+The same thing, expressed as an accumulate.
+
+Now there is no declaration/initialization split.
+
+AAA style is more available.
+#+END_NOTES
+
+** Parallel Operations are Monoidal
+A set of objects: parallel computations
+
+An operation: "race" (parallelize)
+#+ATTR_REVEAL: :frag appear
+An identity value: the operation that never completes.
+
+#+ATTR_REVEAL: :frag appear
+Example use: UI cancellation
+
+#+BEGIN_NOTES
+What would the identity be?
+
+(From my composing async behaviour talk)
+
+This means that future<T> can be a monoid.
+#+END_NOTES
+
 ** More Monoid Observations
 #+ATTR_REVEAL: :frag appear
-A type can be a monoid in more than one way (under more than one operation).
+A type may be a monoid in more than one way (under more than one operation).
 #+ATTR_REVEAL: :frag appear
 A function that returns a monoid is a monoid.
 #+ATTR_REVEAL: :frag appear
-An aggregate of monoids is a monoid.
+An aggregate of monoids is a monoid. (e.g. ~map<K,V>~ where ~V~ is a monoid)
+
+#+BEGIN_NOTES
+Addition/multiplication on ints.
+
+Functions are monoids on their outputs.
+
+Maps are monoids on their values.
+
+(This is the same thing.)
+#+END_NOTES
 
 ** Why not just write a loop?
 Some advantages to ~accumulate~
@@ -216,25 +336,38 @@ Some advantages to ~accumulate~
 #+ATTR_REVEAL: :frag (appear)
  - No declaration/initialization split
  - It's often easier to write a binary function
-   - or unary function with monoidal output
+   - Or a unary function with monoidal output
+   - Simplifies an API
  - Incremental computation
+   - Can accumulate by parts
  - Potential for parallel computation
 
 ** What ~accumulate~ Can Do
 #+ATTR_REVEAL: :frag (appear)
  - Turn binary functions into n-ary functions
  - Collect results of functions whose outputs are monoidal
- - Transform one data structure into another
  - Allow part-whole hierarchies to be treated uniformly
    - which unlocks parallel computation
+ - And don't forget reverse iterators, too
 
-* Part 2: Parallel Computation
+* Part 2
+Aside: Parallel Computations and Monoids
 
 ** Distributed Accumulate
 [[./distributed_add.svg]]
 
+#+BEGIN_NOTES
+Identity + associativity.
+#+END_NOTES
+
 ** Distributed Accumulate
 [[./distributed_average.svg]]
+
+#+BEGIN_NOTES
+Sometimes we need to keep track of a pair of things, or more.
+
+That's fine.
+#+END_NOTES
 
 ** ~std::reduce~
 #+REVEAL_HTML: <br/>
@@ -250,17 +383,56 @@ This works because of associativity (semigroup property).
 #+ATTR_REVEAL: :frag appear
 We lose the type variation, but gain parallelism.
 
+#+BEGIN_NOTES
+~reduce~ is new with C++17.
+
+Every monoid is a semigroup.
+
+But the type variation requires a linear computation.
+#+END_NOTES
+
 ** Big Data Monoids Everywhere
 #+ATTR_REVEAL: :frag (appear)
- - histograms
+ - averages (regular or decayed)
  - top-N calculations
- - computing averages
- - gaussian distributions
+ - histograms
  - bloom filters
+ - Gaussian distributions
  - count-min sketch
- - hyperloglog
+ - Hyperloglog
 
-* Part 3: Nonlinear Structures
+#+BEGIN_NOTES
+Explain each. (ish)
+
+HLL is next slide.
+#+END_NOTES
+
+** HyperLogLog
+[[./hll.png]]
+
+From http://content.research.neustar.biz/blog/hll.html
+
+#+BEGIN_NOTES
+Explain.
+#+END_NOTES
+
+** Algebraic Structures in Big Data
+#+ATTR_REVEAL: :frag (appear)
+ - monoids and semigroups are the key to parallelism
+ - the ability to combine "summary data"
+ - expensive training happens once
+
+#+BEGIN_NOTES
+Summary data: HLL registers, Gaussian curve, etc.
+
+Details are beyond the scope of this talk.
+
+But: combining summaries is much cheaper than combining data sets or re-running
+training on data set combinations.
+#+END_NOTES
+
+* Part 3
+Nonlinear Structures
 
 ** ~accumulate~ Works on Linear Sequences
 How would we make it work on multi-dimensional structures?
@@ -284,13 +456,21 @@ The ~T~ here deals with an empty sequence.
 
 The ~BinaryOp~ deals with a non-empty sequence.
 
+#+BEGIN_NOTES
+The insight here is that we really have two things we're dealing with.
+#+END_NOTES
+
 ** Recursive Definition of a ~vector~
 We can view "sequence accumulation" as handling two cases:
  - an empty ~vector~
  - a ~vector~ consisting of an element plus another ~vector~
-
+#+ATTR_REVEAL: :frag appear
 This is the sort of recursive definition we find in functional languages. And
 it's the key to accumulating other data structures.
+
+#+BEGIN_NOTES
+The insight, explained.
+#+END_NOTES
 
 ** ~std::accumulate~ Viewed Recursively
 #+REVEAL_HTML: <br/>
@@ -308,6 +488,11 @@ auto recursive_accumulate(FwdIt first, FwdIt last,
 #+ATTR_REVEAL: :frag appear
 ~BinaryOp~ (here ~NonEmptyOp~) is really a function from (element, ~vector~) to
 ~T~
+
+#+BEGIN_NOTES
+If we look at the init value as a function, it becomes clearer how to deal with
+sum types.
+#+END_NOTES
 
 ** Accumulating a ~variant~
 #+REVEAL_HTML: <br/>
@@ -328,6 +513,12 @@ struct JSONWrapper
   operator const JSONValue&() const { return v; }
 };
 #+END_SRC
+
+#+BEGIN_NOTES
+Simple implementation of a JSON value.
+
+Wrapper provides for recursion. With implicit conversion to a value.
+#+END_NOTES
 
 ** Example: Render a ~JSONValue~ as a ~string~
 We need a function for each distinct type that can be inside the ~variant~.
@@ -385,6 +576,14 @@ string render_json_value(const JSONValue& jsv)
 }
 #+END_SRC
 
+#+BEGIN_NOTES
+Pass in a function for each distinct constructor.
+
+Compare to accumulate with init as function.
+
+OK, now we'll go through one way to write fold.
+#+END_NOTES
+
 ** A Generic ~fold~ for ~variant~
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
@@ -401,6 +600,10 @@ auto fold(const variant<Ts...>& v, Fs&&... fs)
 A ~variant~, and N functions (one for each case of the ~variant~).
 
 Recall that the "zero value" is implicit in the functions if required.
+
+#+BEGIN_NOTES
+"Zero value" in accumulate is really in the "function" that is the init value.
+#+END_NOTES
 
 ** A Generic ~fold~ for ~variant~
 #+REVEAL_HTML: <br/>
@@ -437,6 +640,10 @@ struct apply_at
 };
 #+END_SRC
 
+#+BEGIN_NOTES
+A recursive template. Louis could probably do better...
+#+END_NOTES
+
 ** A Generic ~fold~ for ~variant~
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
@@ -452,6 +659,12 @@ struct apply_at<Max, Max>
 };
 #+END_SRC
 
+#+BEGIN_NOTES
+This function is actually never called (because of the static_assert earlier).
+
+But it's required to compile and terminate the type recursion.
+#+END_NOTES
+
 ** Generic ~variant~ accumulation
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
@@ -460,6 +673,11 @@ auto fold(const variant<Ts...>& v, Fs&&... fs)
 #+END_SRC
 Hmm, this looks a lot like visitation.
 
+#+BEGIN_NOTES
+Visitation on a single variant, except visit is defined with a single visitor
+class that implements a function for each type in the variant.
+#+END_NOTES
+
 ** Recursive reduction
 Any recursively-specified data structure can be accumulated using visitation to
 produce a monoidal value which is accumulated
@@ -467,17 +685,105 @@ produce a monoidal value which is accumulated
  - tree -> string rendering
  - depth, fringe of trees
  - lighting contributions
- - frustum culling
+ - scene graph operations
 
-** Balanced reduction
-TODO
+#+ATTR_REVEAL: :frag appear
+This is a useful alternative when dealing with heterogeneous hierarchies that it
+is difficult to define a linear traversal for.
 
-* Part 4: Heterogeneous Sequences
+* Part 4
+Heterogeneous Sequences
 
-** Foldads
-TODO
+** Beyond Monoids
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <class InputIt, class T, class BinaryOp>
+T accumulate(InputIt first, InputIt last,
+             T init, BinaryOp op);
 
-* Part 5: The Opposite of Accumulate?
+Type1 fun(const Type1 &a, const Type2 &b);
+#+END_SRC
+~Type1~ and ~Type2~ can be different: this is saying that we know how to "fold"
+values of ~Type2~ into values of ~Type1~.
+
+** Heterogeneous Folding
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <typename T>
+Accumulator fun(const Accumulator &a, const T &b);
+#+END_SRC
+What if ~T~ varied all the time? We could have cases where we know how to "fold"
+lots of different types into an accumulated value.
+
+#+BEGIN_NOTES
+There is one obvious example of this that is almost ubiquitous.
+#+END_NOTES
+
+** The Obvious Example
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <typename T>
+ostream& operator<<(ostream& s, const T &t);
+#+END_SRC
+
+** The Obvious Example
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+auto t = make_tuple("Hello", 3.14, 1729, 'a');
+auto f = [] (ostream& s, const auto& x) -> ostream& {
+  return s << x << '\n';
+};
+fold(t, cout, f) << "done" << endl;
+#+END_SRC
+#+BEGIN_SRC bash
+$ ./a.out
+Hello
+3.14
+1729
+a
+done
+$
+#+END_SRC
+
+#+BEGIN_NOTES
+We supply the init value here (cout).
+
+Compare implicit init value in functions for variant. What is the difference
+here?
+
+We could have structured the function to take a monostate sentinel for the
+"empty tuple" before the first element. But this is cleaner.
+#+END_NOTES
+
+** Heterogeneous Folding
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+template <typename F, typename Z, typename... Ts>
+decltype(auto) fold(const tuple<Ts...>& t, Z&& z, F&& f);
+#+END_SRC
+(Implementation left as an exercise)
+
+#+BEGIN_NOTES
+Not too difficult, but it takes some trickiness to deal with nonmovable types like ostream.
+#+END_NOTES
+
+** Different Types of Accumulation
+#+ATTR_REVEAL: :frag (appear)
+ - std::accumulate
+   - 1 function, linear homogeneous structure
+ - std::accumulate with linear tree traversal
+   - 1 function, multidimensional homogeneous structure
+ - tuple-fold
+   - n functions, linear heterogeneous structure
+ - variant-fold
+   - n functions, multidimensional heterogeneous structure
+
+#+ATTR_REVEAL: :frag appear
+The empire so far... all of these could also be parallel, given the appropriate
+monoidal structure.
+
+* Part 5
+The Opposite of Accumulate?
 
 ** Fold? Unfold
 If ~accumulate~ is folding up a data structure to produce a value...
@@ -490,8 +796,8 @@ The opposite is "unfolding" a seed value to produce a data structure.
 template <typename InputIt, typename T, typename F>
 T accumulate(InputIt first, InputIt last, T init, F f);
 
-template <typename FwdIt, typename T, typename F>
-FwdIt unfold(F f, FwdIt it, T init);
+template <typename OutputIt, typename T, typename F>
+OutputIt unfold(F f, OutputIt it, T init);
 #+END_SRC
 ~F~ will be repeatedly called with a "reducing" ~T~ value and write the result(s)
 to ~it~.
@@ -502,11 +808,13 @@ to ~it~.
 
 ** Signature of the Function Passed to ~unfold~
 F is the opposite of ~accumulate~'s BinaryOp
-
+#+BEGIN_SRC cpp
+Type1 fun(const Type1 &a, const Type2 &b);
+#+END_SRC
 #+ATTR_REVEAL: :frag appear
 It's clear that ~F~ needs to return a ~pair~
 #+ATTR_REVEAL: :frag (appear)
- * result to write into the iterator
+ * result (say of type ~U~) to write into the output range
  * new value of ~T~ to feed into next invocation of ~F~
 
 #+ATTR_REVEAL: :frag appear
@@ -520,6 +828,7 @@ values.
 template <typename FwdIt, typename T, typename F>
 FwdIt unfold(F f, FwdIt it, T init, T term);
 #+END_SRC
+Choice 1: terminate when a termination value (of type ~T~) is returned.
 
 ** Three Choices for ~unfold~ Termination
 #+REVEAL_HTML: <br/>
@@ -528,6 +837,12 @@ FwdIt unfold(F f, FwdIt it, T init, T term);
 template <typename FwdIt, typename T, typename F, typename U>
 FwdIt unfold(F f, FwdIt it, T init, U term);
 #+END_SRC
+Choice 2: terminate when a termination value (of type ~U~) is returned.
+
+#+BEGIN_NOTES
+Choices 1 and 2 both involve putting a sentinel termination value inside the
+type: either in the first element or the second element of the returned pair.
+#+END_NOTES
 
 ** Three Choices for ~unfold~ Termination
 #+REVEAL_HTML: <br/>
@@ -536,6 +851,11 @@ FwdIt unfold(F f, FwdIt it, T init, U term);
 template <typename FwdIt, typename T, typename F>
 FwdIt unfold(F f, FwdIt it, T init);
 #+END_SRC
+Choice 3: F returns an ~optional~; terminate when ~nullopt~ is returned.
+
+#+BEGIN_NOTES
+optional is made for sentinel values!
+#+END_NOTES
 
 ** How To Unfold
 #+REVEAL_HTML: <br/>
@@ -551,6 +871,11 @@ FwdIt unfold(F f, FwdIt it, T init)
 }
 #+END_SRC
 ~F~ returns ~optional<pair<range, T>>~
+
+#+BEGIN_NOTES
+Note that f returns a range. This is more general than returning a singleton
+value (although it may be a singleton range)
+#+END_NOTES
 
 ** Unfold Example
 #+BEGIN_SRC cpp -n
@@ -573,6 +898,10 @@ optional<pair<string, int>> to_roman(int n)
 }
 #+END_SRC
 
+#+BEGIN_NOTES
+A simple example. This function is quite easy to write?
+#+END_NOTES
+
 ** Unfold Example
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
@@ -589,6 +918,10 @@ MDCCXXIX
 $
 #+END_SRC
 
+#+BEGIN_NOTES
+Iterating to_roman gives us the expected result.
+#+END_NOTES
+
 ** Fold and Unfold are Really the Same
 Just transformations on a data structure.
 #+ATTR_REVEAL: :frag appear
@@ -603,7 +936,8 @@ But structures are themselves values...
 Compare ~generate~, ~generate_n~
 #+END_NOTES
 
-* Postscript: The Fruits of Algorithmic Perversions
+* Postscript
+The Fruits of Algorithmic Perversions
 
 ** The Question
 If you were stuck on a desert island, which algorithms would you take with you?
@@ -718,6 +1052,18 @@ What if you couldn't write any loops, so you're stuck with what you have?
 #+ATTR_REVEAL: :frag appear
 Of 90 total, 77 are basically "plain loops"
 
+#+BEGIN_NOTES
+Remove swap, iter_swap
+
+Remove random_shuffle (don't want STL to make angry face)
+
+Remove binary searches
+
+Remove heap ops
+
+The rest!
+#+END_NOTES
+
 ** Why Doesn't ~accumulate~ Work on Iterators?
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
@@ -732,6 +1078,10 @@ T accumulate(InputIt first, InputIt last,
 }
 #+END_SRC
 
+#+BEGIN_NOTES
+It does work on iterators, doesn't it?
+#+END_NOTES
+
 ** Why Doesn't ~accumulate~ Work on Iterators?
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
@@ -745,112 +1095,69 @@ T accumulate(InputIt first, InputIt last,
   return init;
 }
 #+END_SRC
-
-** Hunting for Raw Loops, Redux
-
-
-* Summary
-
-** Further reading
-Add ALL the Things
-
-** Summary
-
+With this formulation, we can view an iterator as an accumulator value.
 
 #+BEGIN_NOTES
-Moving beyond sums and factorials
-Elementary operations: count, max, min
-Better composability
-Iterator category considerations
-Code and data through the accumulate lens
-Balanced reduction
-reduce: one of the heirs of accumulate
-Big data, mapreduce etc
-Accumulating tree structures
-Further genericization
-Application to variants
-Logging as an accumulation
-Beyond monoids
-Genericizing logging
-
-Unfolding data structures
-Accumulation as its own dual?
-The fruits of algorithmic perversions
-Hunting for raw loops, redux
-
-The Most Powerful Algorithm?
-It's not even in ~<algorithm>~...
-APL calls it ~/~
-Many languages call it ~reduce~
-C++ calls it ~accumulate~ (or ~reduce~ in C++17, basically the same)
-
-accumulate
-with plus -> sum
-with multiply -> factorial
-count
-min/max
-
-inner_product
-
-show generated code
-
-more accumulations
-ditch the "shall not modify elements" proviso
-
-for_each
-copy
-transform
-remove/replace/etc
-
-accumulate_iter
-max_element
-(safe form of same using plain accumulate)
-
-surprising forms
-shuffle
-
-reverse (with relaxed iterator category)
-likewise copy_backward, move_backward
-
-foldr with reverse iterators?
-
-other applications
-functions that return bool
-functions that return int
-functions that alter a data structure (insert/remove items)
-turn binary functions into n-ary functions
-infinite streams?
-
-parallelization, balanced reduction
-monoids
-McCarthy, Knuth, EoP chapter 11
-
-tree folds?
-view "list fold" as a fold that takes two constructors
-b -> (a -> b -> b) -> [a] -> b
-two constructors correspond to:
-1. b is how to convert [] to b
-2. (a -> b -> b) is how to combine element a with existing fold result b
-
-fold for binary tree of a has similar signature:
-(a -> b) -> (b -> b -> b) -> Tree a -> a
-(a -> b) is how to convert a value a at leaf into a b
-(b -> b -> b) is how to combine two fold results (from subtrees)
-
-in general any data structure can be folded given the appropriate functions to
-convert from each disjoint state
-
-we could write fold for optional (it wouldn't be very interesting; optional is
-like a vector with a max of one element)
-
-we could write a variadic fold for variant, taking a function for each type, and
-using the variant's index to select the right function
-
-heterogeneous sequences
-logging
-foldads
-
-unfolds
-compare generate, generate_n
-possible formulations
+Pass iterator to op rather than value to op: allows accumulating an iterator.
 #+END_NOTES
+
+** Accumulate abuse
+I'm the first to admit that some of these algorithm implementations are...
+interesting.
+
+ - find (using exceptions for control flow)
+ - reverse (using forward iterators and a function as the accumulator)
+
+** But...
+Some interesting alternatives arise.
+#+ATTR_REVEAL: :frag (appear)
+ - ~find_if~ -> ~find_all~?
+ - ~adjacent_find~ -> ~adjacent_find_all~?
+ - ~min_element~ that returns an ~optional~ value?
+ - ~sort~ with forward iterators?
+
+#+BEGIN_NOTES
+Parallelism?
+
+There has also been some interest in relaxing the iterator categories on some
+algorithms. P0227 Weakening the iterator categories of some standard algorithms.
+#+END_NOTES
+
+** Hunting for (Raw?) Loops, Redux
+Almost everything can be expressed as some form of accumulation.
+
+Should it be? That's for you to decide.
+
+But when you get used to seeing monoids, everything is monoids.
+
+#+BEGIN_NOTES
+Benefits: no declaration/initialization split
+
+Watch out for: copies
+#+END_NOTES
+
+** Some Further Reading
+ - [[http://www.amazon.com/exec/obidos/ASIN/032163537X/ref=nosim/elbenocom-20][Elements of Progamming]]
+ - [[https://wiki.haskell.org/Fold][Fold (Haskell Wiki)]]
+ - [[http://blog.sumtypeofway.com/an-introduction-to-recursion-schemes/][An Introduction to Recursion Schemes]]
+ - [[https://izbicki.me/blog/gausian-distributions-are-monoids][Gaussian Distributions form a Monoid]]
+ - [[https://github.com/twitter/algebird][Algebird]] / [[https://github.com/mikeizbicki/HLearn][HLearn]]
+ - [[https://www.infoq.com/presentations/abstract-algebra-analytics][Add ALL the Things: Abstract Algebra Meets Analytics]]
+
+ - Variant folding code
+   - https://gist.github.com/elbeno/e5c333fff247e78990e08ab8ed56aecd
+ - Tuple folding code
+   - https://gist.github.com/elbeno/95e710c04d56d8cc72ade2e6b2bbe9d5
+
+** Summary
+#+ATTR_REVEAL: :frag (appear)
+ - Any time you write an API, see if any of your data types form a monoid or a
+   semigroup under any operations you provide.
+ - Look for opportunities where you are applying a function in a loop.
+ - Monoids are everywhere.
+ - Think about folding with multidimensional structures or heterogeneous sequences.
+ - Unfolds are an alternative way to think of things; can be combined with folds
+   to produce arbitrary structural transformations.
+ - Algorithmic perversions can be fruitful in terms of learning...
+ - Accumulation: not just for adding things up!
+
