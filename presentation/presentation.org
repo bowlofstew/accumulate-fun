@@ -6,9 +6,9 @@
 #+REVEAL_MARGIN: 0.1
 #+REVEAL_MIN_SCALE: 0.5
 #+REVEAL_MAX_SCALE: 2.5
-#+REVEAL_TRANS: slide
-#+REVEAL_THEME: night
-#+REVEAL_HLEVEL: 2
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: solarized
+#+REVEAL_HLEVEL: 1
 #+REVEAL_EXTRA_CSS: ./presentation.css
 #+REVEAL_ROOT: ../../presentations/reveal.js/
 
@@ -16,10 +16,10 @@
 # (setq org-reveal-title-slide 'auto)
 # see https://github.com/yjwen/org-reveal/commit/84a445ce48e996182fde6909558824e154b76985
 
-#+TITLE: std::accumulate
+#+TITLE: ~std::accumulate~
 #+AUTHOR: Ben Deane
 #+EMAIL: bdeane@blizzard.com
-#+DATE: 29th July 2016
+#+DATE: September 20th, 2016
 
 * Part 0
 The Most Powerful Algorithm in the World?
@@ -27,14 +27,14 @@ The Most Powerful Algorithm in the World?
 ** A Long Time Ago, In a Galaxy etc...
 [[./powerful.png]]
 
-** A Long Time Ago, In a Galaxy etc...
+** A Long Time Ago, In a Galaxy etc...                            :noexport:
 [[./another_talk.png]]
 
-** Another Talk
+** Another Talk                                                   :noexport:
 
 This is that talk.
 
-** Nomenclature note
+** Nomenclature note                                              :noexport:
 I'll try to talk "in C++" for this talk.
 
 But I may occasionally say "fold" when I mean "accumulate" or "reduce".
@@ -107,7 +107,7 @@ Are you convinced that this will find the maximum value?
 Value-based ~min_element~ or ~max_element~
 #+BEGIN_SRC cpp
 template <typename It, typename Compare,
-          typename T = typename std::iterator_traits<It>::value_type>
+          typename T = typename iterator_traits<It>::value_type>
 T min_element(It first, It last, Compare cmp)
 {
   // precondition: first != last
@@ -235,6 +235,43 @@ A set of objects and an operation such that:
 "I <3 monoids"
 #+END_NOTES
 
+** Building HTTP headers: Before
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+curl_slist* curl_headers = NULL;
+for (auto it = headers.begin();
+     it != headers.end(); ++it)
+{
+  curl_headers = curl_slist_append(curl_headers,
+    (format("%s: %s") % it->first % it->second).str().c_str());
+}
+#+END_SRC
+
+#+BEGIN_NOTES
+A raw loop.
+
+In fact it's OK for the headers to be null here.
+#+END_NOTES
+
+** Building HTTP headers: After
+#+REVEAL_HTML: <br/>
+#+BEGIN_SRC cpp
+  curl_slist* curl_headers = accumulate(
+      headers.cbegin(), headers.cend(), static_cast<curl_slist*>(nullptr),
+      [] (curl_slist* h, const auto& p) {
+          return curl_slist_append(h,
+            (format("%s: %s") % p.first % p.second).str().c_str());
+        });
+#+END_SRC
+
+#+BEGIN_NOTES
+The same thing, expressed as an accumulate.
+
+Now there is no declaration/initialization split.
+
+AAA style is more available.
+#+END_NOTES
+
 ** Monoids Are Everywhere!
 Monoids are everywhere, and any monoid can be accumulated:
 #+ATTR_REVEAL: :frag (appear)
@@ -257,44 +294,7 @@ Monoids are everywhere, and any monoid can be accumulated:
 Simeon's JSON objects.
 #+END_NOTES
 
-** Building HTTP headers: Before
-#+REVEAL_HTML: <br/>
-#+BEGIN_SRC cpp
-curl_slist* curl_headers = NULL;
-for (auto it = headers.begin();
-     it != headers.end(); ++it)
-{
-  curl_headers = curl_slist_append(curl_headers,
-    (format("%s: %s") % it->first % it->second).str().c_str());
-}
-#+END_SRC
-
-#+BEGIN_NOTES
-A raw loop.
-
-In fact it's OK for the headers to be null here.
-#+END_NOTES
-
-** Building HTTP headers: After
-#+REVEAL_HTML: <br/>
-#+BEGIN_SRC cpp
-curl_slist* curl_headers = accumulate(
-    headers.cbegin(), headers.cend(), static_cast<curl_slist*>(nullptr),
-    [] (curl_slist* h, const auto& v) {
-        return curl_slist_append(h,
-          (format("%s: %s") % it->first % it->second).str().c_str());
-      });
-#+END_SRC
-
-#+BEGIN_NOTES
-The same thing, expressed as an accumulate.
-
-Now there is no declaration/initialization split.
-
-AAA style is more available.
-#+END_NOTES
-
-** Parallel Operations are Monoidal
+** Parallel Operations are Monoidal                               :noexport:
 A set of objects: parallel computations
 
 An operation: "race" (parallelize)
@@ -348,7 +348,6 @@ Some advantages to ~accumulate~
  - Collect results of functions whose outputs are monoidal
  - Allow part-whole hierarchies to be treated uniformly
    - which unlocks parallel computation
- - And don't forget reverse iterators, too
 
 * Part 2
 Aside: Parallel Computations and Monoids
@@ -592,9 +591,9 @@ auto fold(const variant<Ts...>& v, Fs&&... fs)
 {
   static_assert(sizeof...(Ts) == sizeof...(Fs),
                 "Not enough functions provided to variant fold");
-  return fold_at<0, sizeof...(Ts)>::apply(
+  return fold_at(
       v, v.index(),
-      std::forward<Fs>(fs)...);
+      forward<Fs>(fs)...);
 }
 #+END_SRC
 A ~variant~, and N functions (one for each case of the ~variant~).
@@ -613,10 +612,10 @@ static auto fold_at(T&& t, size_t n, F&& f, Fs&&... fs)
 {
   using R = decltype(f(get<0>(t)));
   return apply_at<0, sizeof...(Fs)+1>::template apply<R, T, F, Fs...>(
-      std::forward<T>(t),
+      forward<T>(t),
       n,
-      std::forward<F>(f),
-      std::forward<Fs>(fs)...);
+      forward<F>(f),
+      forward<Fs>(fs)...);
 }
 #+END_SRC
 
@@ -630,12 +629,12 @@ struct apply_at
   static auto apply(T&& t, size_t n, F&& f, Fs&&... fs)
   {
     if (n == N)
-      return std::forward<F>(f)(get<N>(std::forward<T>(t)));
+      return forward<F>(f)(get<N>(forward<T>(t)));
     else
       return apply_at<N+1, Max>::template apply<R, T, Fs...>(
-          std::forward<T>(t),
+          forward<T>(t),
           n,
-          std::forward<Fs>(fs)...);
+          forward<Fs>(fs)...);
   }
 };
 #+END_SRC
@@ -769,18 +768,18 @@ Not too difficult, but it takes some trickiness to deal with nonmovable types li
 
 ** Different Types of Accumulation
 #+ATTR_REVEAL: :frag (appear)
- - std::accumulate
+ - ~accumulate~
    - 1 function, linear homogeneous structure
- - std::accumulate with linear tree traversal
+ - ~accumulate~ with linear tree traversal
    - 1 function, multidimensional homogeneous structure
- - tuple-fold
-   - n functions, linear heterogeneous structure
  - variant-fold
    - n functions, multidimensional heterogeneous structure
+ - tuple-fold
+   - n functions, linear heterogeneous structure
 
 #+ATTR_REVEAL: :frag appear
 The empire so far... all of these could also be parallel, given the appropriate
-monoidal structure.
+monoidal (or semigroup) structure.
 
 * Part 5
 The Opposite of Accumulate?
@@ -825,8 +824,8 @@ values.
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
 // 1. provide a sentinel value of type T
-template <typename FwdIt, typename T, typename F>
-FwdIt unfold(F f, FwdIt it, T init, T term);
+template <typename OutputIt, typename T, typename F>
+OutputIt unfold(F f, OutputIt it, T init, T term);
 #+END_SRC
 Choice 1: terminate when a termination value (of type ~T~) is returned.
 
@@ -834,8 +833,8 @@ Choice 1: terminate when a termination value (of type ~T~) is returned.
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
 // 2. provide a sentinel value of type (other thing returned by F)
-template <typename FwdIt, typename T, typename F, typename U>
-FwdIt unfold(F f, FwdIt it, T init, U term);
+template <typename OutputIt, typename T, typename F, typename U>
+OutputIt unfold(F f, OutputIt it, T init, U term);
 #+END_SRC
 Choice 2: terminate when a termination value (of type ~U~) is returned.
 
@@ -848,8 +847,8 @@ type: either in the first element or the second element of the returned pair.
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
 // 3. F will return an optional
-template <typename FwdIt, typename T, typename F>
-FwdIt unfold(F f, FwdIt it, T init);
+template <typename OutputIt, typename T, typename F>
+OutputIt unfold(F f, OutputIt it, T init);
 #+END_SRC
 Choice 3: F returns an ~optional~; terminate when ~nullopt~ is returned.
 
@@ -860,15 +859,15 @@ optional is made for sentinel values!
 ** How To Unfold
 #+REVEAL_HTML: <br/>
 #+BEGIN_SRC cpp
-template <typename FwdIt, typename T, typename F>
-FwdIt unfold(F f, FwdIt it, T init)
-{
-  T t{std::forward<T>(init)};
-  for (auto o = f(t); o; o = f(o->second)) {
-    it = std::move(std::begin(o->first), std::end(o->first), it);
+  template <typename OutputIt, typename T, typename F>
+  OutputIt unfold(F f, OutputIt it, T&& init)
+  {
+    for (auto o = f(forward<T>(init)); o;
+         o = f(move(o->second))) {
+      it = move(begin(o->first), end(o->first), it);
+    }
+    return it;
   }
-  return it;
-}
 #+END_SRC
 ~F~ returns ~optional<pair<range, T>>~
 
@@ -1077,6 +1076,7 @@ T accumulate(InputIt first, InputIt last,
   return init;
 }
 #+END_SRC
+The function receives a value rather than an iterator...
 
 #+BEGIN_NOTES
 It does work on iterators, doesn't it?
@@ -1101,7 +1101,7 @@ With this formulation, we can view an iterator as an accumulator value.
 Pass iterator to op rather than value to op: allows accumulating an iterator.
 #+END_NOTES
 
-** Accumulate abuse
+** Abusing ~accumulate~
 I'm the first to admit that some of these algorithm implementations are...
 interesting.
 
@@ -1137,20 +1137,16 @@ Watch out for: copies
 #+END_NOTES
 
 ** Some Further Reading
- - [[http://www.amazon.com/exec/obidos/ASIN/032163537X/ref=nosim/elbenocom-20][Elements of Progamming]]
  - [[https://wiki.haskell.org/Fold][Fold (Haskell Wiki)]]
  - [[http://blog.sumtypeofway.com/an-introduction-to-recursion-schemes/][An Introduction to Recursion Schemes]]
  - [[https://izbicki.me/blog/gausian-distributions-are-monoids][Gaussian Distributions form a Monoid]]
- - [[https://github.com/twitter/algebird][Algebird]] / [[https://github.com/mikeizbicki/HLearn][HLearn]]
  - [[https://www.infoq.com/presentations/abstract-algebra-analytics][Add ALL the Things: Abstract Algebra Meets Analytics]]
-
  - Variant folding code
    - https://gist.github.com/elbeno/e5c333fff247e78990e08ab8ed56aecd
  - Tuple folding code
    - https://gist.github.com/elbeno/95e710c04d56d8cc72ade2e6b2bbe9d5
 
 ** Summary
-#+ATTR_REVEAL: :frag (appear)
  - Any time you write an API, see if any of your data types form a monoid or a
    semigroup under any operations you provide.
  - Look for opportunities where you are applying a function in a loop.

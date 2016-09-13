@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>std::accumulate</title>
+<title><code>std::accumulate</code></title>
 <meta name="author" content="(Ben Deane)"/>
 <style type="text/css">
 .underline { text-decoration: underline; }
 </style>
 <link rel="stylesheet" href="../../presentations/reveal.js/css/reveal.css"/>
 
-<link rel="stylesheet" href="../../presentations/reveal.js/css/theme/night.css" id="theme"/>
+<link rel="stylesheet" href="../../presentations/reveal.js/css/theme/solarized.css" id="theme"/>
 
 <link rel="stylesheet" href="./presentation.css"/>
 
@@ -27,19 +27,17 @@
 <body>
 <div class="reveal">
 <div class="slides">
-<section id="sec-title-slide"><h1>std::accumulate</h1><h2>Exploring an Algorithmic Empire</h2><br/><h2>Ben Deane</h2><h3><a href="mailto:bdeane@blizzard.com">bdeane@blizzard.com</a> / <a href="http://twitter.com/ben_deane">@ben_deane</a></h3><h2>29th July 2016</h2>
+<section id="sec-title-slide"><h1><code>std::accumulate</code></h1><h2>Exploring an Algorithmic Empire</h2><br/><h2>Ben Deane</h2><h3><a href="mailto:bdeane@blizzard.com">bdeane@blizzard.com</a> / <a href="http://twitter.com/ben_deane">@ben_deane</a></h3><h2>September 20th, 2016</h2>
 </section>
 
 <section>
-<section id="slide-orgheadline5">
-<h2 id="orgheadline5">Part 0</h2>
+<section id="slide-orgheadline2">
+<h2 id="orgheadline2">Part 0</h2>
 <p>
 The Most Powerful Algorithm in the World?
 </p>
 
 </section>
-</section>
-<section>
 <section id="slide-orgheadline1">
 <h3 id="orgheadline1">A Long Time Ago, In a Galaxy etc&#x2026;</h3>
 
@@ -51,54 +49,15 @@ The Most Powerful Algorithm in the World?
 </section>
 </section>
 <section>
-<section id="slide-orgheadline2">
-<h3 id="orgheadline2">A Long Time Ago, In a Galaxy etc&#x2026;</h3>
-
-<div class="figure">
-<p><img src="./another_talk.png" alt="another_talk.png" />
-</p>
-</div>
-
-</section>
-</section>
-<section>
-<section id="slide-orgheadline3">
-<h3 id="orgheadline3">Another Talk</h3>
-<p>
-This is that talk.
-</p>
-
-</section>
-</section>
-<section>
-<section id="slide-orgheadline4">
-<h3 id="orgheadline4">Nomenclature note</h3>
-<p>
-I'll try to talk "in C++" for this talk.
-</p>
-
-<p>
-But I may occasionally say "fold" when I mean "accumulate" or "reduce".
-</p>
-
-<p>
-Don't worry&#x2026; this talk isn't FP-heavy. There's no Haskell code.
-</p>
-
-</section>
-</section>
-<section>
-<section id="slide-orgheadline23">
-<h2 id="orgheadline23">Part 1</h2>
+<section id="slide-orgheadline19">
+<h2 id="orgheadline19">Part 1</h2>
 <p>
 Accumulatable Things
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline6">
-<h3 id="orgheadline6"><code>std::accumulate</code></h3>
+<section id="slide-orgheadline3">
+<h3 id="orgheadline3"><code>std::accumulate</code></h3>
 <br/>
 <div class="org-src-container">
 
@@ -133,10 +92,8 @@ except in the single copy of the passed-in init value.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline7">
-<h3 id="orgheadline7">Typical uses</h3>
+<section id="slide-orgheadline4">
+<h3 id="orgheadline4">Typical uses</h3>
 <br/>
 <div class="org-src-container">
 
@@ -163,10 +120,8 @@ This is what many people think accumulate is for. And not much else?
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline8">
-<h3 id="orgheadline8">How about finding a min or max?</h3>
+<section id="slide-orgheadline5">
+<h3 id="orgheadline5">How about finding a min or max?</h3>
 <br/>
 <div class="org-src-container">
 
@@ -186,17 +141,15 @@ Are you convinced that this will find the maximum value?
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline9">
-<h3 id="orgheadline9">How about finding a min or max?</h3>
+<section id="slide-orgheadline6">
+<h3 id="orgheadline6">How about finding a min or max?</h3>
 <p>
 Value-based <code>min_element</code> or <code>max_element</code>
 </p>
 <div class="org-src-container">
 
 <pre  class="src src-cpp"><span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">typename</span> <span style="color: #228b22;">It</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">Compare</span>,
-          <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span> = <span style="color: #a020f0;">typename</span> <span style="color: #008b8b;">std</span>::<span style="color: #008b8b;">iterator_traits</span><span style="color: #7388d6;">&lt;</span><span style="color: #228b22;">It</span><span style="color: #7388d6;">&gt;</span>::<span style="color: #228b22;">value_type</span><span style="color: #707183;">&gt;</span>
+          <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span> = <span style="color: #a020f0;">typename</span> <span style="color: #008b8b;">iterator_traits</span><span style="color: #7388d6;">&lt;</span><span style="color: #228b22;">It</span><span style="color: #7388d6;">&gt;</span>::<span style="color: #228b22;">value_type</span><span style="color: #707183;">&gt;</span>
 <span style="color: #228b22;">T</span> <span style="color: #0000ff;">min_element</span><span style="color: #707183;">(</span><span style="color: #228b22;">It</span> <span style="color: #a0522d;">first</span>, <span style="color: #228b22;">It</span> <span style="color: #a0522d;">last</span>, <span style="color: #228b22;">Compare</span> <span style="color: #a0522d;">cmp</span><span style="color: #707183;">)</span>
 <span style="color: #707183;">{</span>
   <span style="color: #bebebe;">// </span><span style="color: #bebebe;">precondition: first != last</span>
@@ -222,10 +175,8 @@ Note the use of the Compare function. Why did I write it this way?
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline10">
-<h3 id="orgheadline10">What about <code>bool</code> values?</h3>
+<section id="slide-orgheadline7">
+<h3 id="orgheadline7">What about <code>bool</code> values?</h3>
 <br/>
 <div class="org-src-container">
 
@@ -257,10 +208,8 @@ very interesting as it stands.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline11">
-<h3 id="orgheadline11">The signature of the function</h3>
+<section id="slide-orgheadline8">
+<h3 id="orgheadline8">The signature of the function</h3>
 <br/>
 <div class="org-src-container">
 
@@ -275,10 +224,8 @@ Things get more interesting when they differ.
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline12">
-<h3 id="orgheadline12">A more interesting <code>bool</code> case</h3>
+<section id="slide-orgheadline9">
+<h3 id="orgheadline9">A more interesting <code>bool</code> case</h3>
 <br/>
 <div class="org-src-container">
 
@@ -319,10 +266,8 @@ Note the order of args to &amp;&amp;.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline13">
-<h3 id="orgheadline13"><code>bool</code> As the Result</h3>
+<section id="slide-orgheadline10">
+<h3 id="orgheadline10"><code>bool</code> As the Result</h3>
 <p>
 We use many function results as boolean values in control flow.
 </p>
@@ -348,10 +293,8 @@ We use a lot of things as bools.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline14">
-<h3 id="orgheadline14">More things&#x2026;</h3>
+<section id="slide-orgheadline11">
+<h3 id="orgheadline11">More things&#x2026;</h3>
 <ul>
 <li class="fragment appear">joining strings</li>
 <li class="fragment appear">building requests from key-value pairs</li>
@@ -376,10 +319,8 @@ They can all be accumulated?
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline15">
-<h3 id="orgheadline15">You All Remember Monoids?</h3>
+<section id="slide-orgheadline12">
+<h3 id="orgheadline12">You All Remember Monoids?</h3>
 <p>
 A set of objects and an operation such that:
 </p>
@@ -402,10 +343,65 @@ A set of objects and an operation such that:
 </aside>
 
 </section>
+<section id="slide-orgheadline13">
+<h3 id="orgheadline13">Building HTTP headers: Before</h3>
+<br/>
+<div class="org-src-container">
+
+<pre  class="src src-cpp"><span style="color: #228b22;">curl_slist</span>* <span style="color: #a0522d;">curl_headers</span> = <span style="color: #008b8b;">NULL</span>;
+<span style="color: #a020f0;">for</span> <span style="color: #707183;">(</span><span style="color: #a020f0;">auto</span> <span style="color: #a0522d;">it</span> = headers.begin<span style="color: #7388d6;">()</span>;
+     it != headers.end<span style="color: #7388d6;">()</span>; ++it<span style="color: #707183;">)</span>
+<span style="color: #707183;">{</span>
+  curl_headers = curl_slist_append<span style="color: #7388d6;">(</span>curl_headers,
+    <span style="color: #909183;">(</span>format<span style="color: #709870;">(</span><span style="color: #b22222;">"%s: %s"</span><span style="color: #709870;">)</span> % it-&gt;first % it-&gt;second<span style="color: #909183;">)</span>.str<span style="color: #909183;">()</span>.c_str<span style="color: #909183;">()</span><span style="color: #7388d6;">)</span>;
+<span style="color: #707183;">}</span>
+</pre>
+</div>
+
+<aside class="notes">
+<p>
+A raw loop.
+</p>
+
+<p>
+In fact it's OK for the headers to be null here.
+</p>
+
+</aside>
+
 </section>
-<section>
-<section id="slide-orgheadline16">
-<h3 id="orgheadline16">Monoids Are Everywhere!</h3>
+<section id="slide-orgheadline14">
+<h3 id="orgheadline14">Building HTTP headers: After</h3>
+<br/>
+<div class="org-src-container">
+
+<pre  class="src src-cpp"><span style="color: #228b22;">curl_slist</span>* <span style="color: #a0522d;">curl_headers</span> = accumulate<span style="color: #707183;">(</span>
+    headers.cbegin<span style="color: #7388d6;">()</span>, headers.cend<span style="color: #7388d6;">()</span>, <span style="color: #a020f0;">static_cast</span><span style="color: #7388d6;">&lt;</span><span style="color: #228b22;">curl_slist</span>*<span style="color: #7388d6;">&gt;(</span><span style="color: #008b8b;">nullptr</span><span style="color: #7388d6;">)</span>,
+    <span style="color: #7388d6;">[]</span> <span style="color: #7388d6;">(</span>curl_slist* h, <span style="color: #a020f0;">const</span> <span style="color: #a020f0;">auto</span>&amp; <span style="color: #a0522d;">p</span><span style="color: #7388d6;">)</span> <span style="color: #7388d6;">{</span>
+        <span style="color: #a020f0;">return</span> curl_slist_append<span style="color: #909183;">(</span>h,
+          <span style="color: #709870;">(</span>format<span style="color: #907373;">(</span><span style="color: #b22222;">"%s: %s"</span><span style="color: #907373;">)</span> % p.first % p.second<span style="color: #709870;">)</span>.str<span style="color: #709870;">()</span>.c_str<span style="color: #709870;">()</span><span style="color: #909183;">)</span>;
+      <span style="color: #7388d6;">}</span><span style="color: #707183;">)</span>;
+</pre>
+</div>
+
+<aside class="notes">
+<p>
+The same thing, expressed as an accumulate.
+</p>
+
+<p>
+Now there is no declaration/initialization split.
+</p>
+
+<p>
+AAA style is more available.
+</p>
+
+</aside>
+
+</section>
+<section id="slide-orgheadline15">
+<h3 id="orgheadline15">Monoids Are Everywhere!</h3>
 <p>
 Monoids are everywhere, and any monoid can be accumulated:
 </p>
@@ -438,106 +434,8 @@ Simeon's JSON objects.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline17">
-<h3 id="orgheadline17">Building HTTP headers: Before</h3>
-<br/>
-<div class="org-src-container">
-
-<pre  class="src src-cpp"><span style="color: #228b22;">curl_slist</span>* <span style="color: #a0522d;">curl_headers</span> = <span style="color: #008b8b;">NULL</span>;
-<span style="color: #a020f0;">for</span> <span style="color: #707183;">(</span><span style="color: #a020f0;">auto</span> <span style="color: #a0522d;">it</span> = headers.begin<span style="color: #7388d6;">()</span>;
-     it != headers.end<span style="color: #7388d6;">()</span>; ++it<span style="color: #707183;">)</span>
-<span style="color: #707183;">{</span>
-  curl_headers = curl_slist_append<span style="color: #7388d6;">(</span>curl_headers,
-    <span style="color: #909183;">(</span>format<span style="color: #709870;">(</span><span style="color: #b22222;">"%s: %s"</span><span style="color: #709870;">)</span> % it-&gt;first % it-&gt;second<span style="color: #909183;">)</span>.str<span style="color: #909183;">()</span>.c_str<span style="color: #909183;">()</span><span style="color: #7388d6;">)</span>;
-<span style="color: #707183;">}</span>
-</pre>
-</div>
-
-<aside class="notes">
-<p>
-A raw loop.
-</p>
-
-<p>
-In fact it's OK for the headers to be null here.
-</p>
-
-</aside>
-
-</section>
-</section>
-<section>
-<section id="slide-orgheadline18">
-<h3 id="orgheadline18">Building HTTP headers: After</h3>
-<br/>
-<div class="org-src-container">
-
-<pre  class="src src-cpp"><span style="color: #228b22;">curl_slist</span>* <span style="color: #a0522d;">curl_headers</span> = accumulate<span style="color: #707183;">(</span>
-    headers.cbegin<span style="color: #7388d6;">()</span>, headers.cend<span style="color: #7388d6;">()</span>, <span style="color: #a020f0;">static_cast</span><span style="color: #7388d6;">&lt;</span><span style="color: #228b22;">curl_slist</span>*<span style="color: #7388d6;">&gt;(</span><span style="color: #008b8b;">nullptr</span><span style="color: #7388d6;">)</span>,
-    <span style="color: #7388d6;">[]</span> <span style="color: #7388d6;">(</span>curl_slist* h, <span style="color: #a020f0;">const</span> <span style="color: #a020f0;">auto</span>&amp; <span style="color: #a0522d;">v</span><span style="color: #7388d6;">)</span> <span style="color: #7388d6;">{</span>
-        <span style="color: #a020f0;">return</span> curl_slist_append<span style="color: #909183;">(</span>h,
-          <span style="color: #709870;">(</span>format<span style="color: #907373;">(</span><span style="color: #b22222;">"%s: %s"</span><span style="color: #907373;">)</span> % it-&gt;first % it-&gt;second<span style="color: #709870;">)</span>.str<span style="color: #709870;">()</span>.c_str<span style="color: #709870;">()</span><span style="color: #909183;">)</span>;
-      <span style="color: #7388d6;">}</span><span style="color: #707183;">)</span>;
-</pre>
-</div>
-
-<aside class="notes">
-<p>
-The same thing, expressed as an accumulate.
-</p>
-
-<p>
-Now there is no declaration/initialization split.
-</p>
-
-<p>
-AAA style is more available.
-</p>
-
-</aside>
-
-</section>
-</section>
-<section>
-<section id="slide-orgheadline19">
-<h3 id="orgheadline19">Parallel Operations are Monoidal</h3>
-<p>
-A set of objects: parallel computations
-</p>
-
-<p>
-An operation: "race" (parallelize)
-</p>
-<p class="fragment appear">
-An identity value: the operation that never completes.
-</p>
-
-<p class="fragment appear">
-Example use: UI cancellation
-</p>
-
-<aside class="notes">
-<p>
-What would the identity be?
-</p>
-
-<p>
-(From my composing async behaviour talk)
-</p>
-
-<p>
-This means that future&lt;T&gt; can be a monoid.
-</p>
-
-</aside>
-
-</section>
-</section>
-<section>
-<section id="slide-orgheadline20">
-<h3 id="orgheadline20">More Monoid Observations</h3>
+<section id="slide-orgheadline16">
+<h3 id="orgheadline16">More Monoid Observations</h3>
 <p class="fragment appear">
 A type may be a monoid in more than one way (under more than one operation).
 </p>
@@ -568,10 +466,8 @@ Maps are monoids on their values.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline21">
-<h3 id="orgheadline21">Why not just write a loop?</h3>
+<section id="slide-orgheadline17">
+<h3 id="orgheadline17">Why not just write a loop?</h3>
 <p>
 Some advantages to <code>accumulate</code>
 </p>
@@ -594,10 +490,8 @@ Some advantages to <code>accumulate</code>
 </ul>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline22">
-<h3 id="orgheadline22">What <code>accumulate</code> Can Do</h3>
+<section id="slide-orgheadline18">
+<h3 id="orgheadline18">What <code>accumulate</code> Can Do</h3>
 <ul>
 <li class="fragment appear">Turn binary functions into n-ary functions</li>
 <li class="fragment appear">Collect results of functions whose outputs are monoidal</li>
@@ -606,24 +500,21 @@ Some advantages to <code>accumulate</code>
 <li>which unlocks parallel computation</li>
 
 </ul></li>
-<li class="fragment appear">And don't forget reverse iterators, too</li>
 
 </ul>
 
 </section>
 </section>
 <section>
-<section id="slide-orgheadline30">
-<h2 id="orgheadline30">Part 2</h2>
+<section id="slide-orgheadline26">
+<h2 id="orgheadline26">Part 2</h2>
 <p>
 Aside: Parallel Computations and Monoids
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline24">
-<h3 id="orgheadline24">Distributed Accumulate</h3>
+<section id="slide-orgheadline20">
+<h3 id="orgheadline20">Distributed Accumulate</h3>
 
 <div class="figure">
 <p><object type="image/svg+xml" data="./distributed_add.svg" >
@@ -639,10 +530,8 @@ Identity + associativity.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline25">
-<h3 id="orgheadline25">Distributed Accumulate</h3>
+<section id="slide-orgheadline21">
+<h3 id="orgheadline21">Distributed Accumulate</h3>
 
 <div class="figure">
 <p><object type="image/svg+xml" data="./distributed_average.svg" >
@@ -662,10 +551,8 @@ That's fine.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline26">
-<h3 id="orgheadline26"><code>std::reduce</code></h3>
+<section id="slide-orgheadline22">
+<h3 id="orgheadline22"><code>std::reduce</code></h3>
 <br/>
 <div class="org-src-container">
 
@@ -700,10 +587,8 @@ But the type variation requires a linear computation.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline27">
-<h3 id="orgheadline27">Big Data Monoids Everywhere</h3>
+<section id="slide-orgheadline23">
+<h3 id="orgheadline23">Big Data Monoids Everywhere</h3>
 <ul>
 <li class="fragment appear">averages (regular or decayed)</li>
 <li class="fragment appear">top-N calculations</li>
@@ -727,10 +612,8 @@ HLL is next slide.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline28">
-<h3 id="orgheadline28">HyperLogLog</h3>
+<section id="slide-orgheadline24">
+<h3 id="orgheadline24">HyperLogLog</h3>
 
 <div class="figure">
 <p><img src="./hll.png" alt="hll.png" />
@@ -749,10 +632,8 @@ Explain.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline29">
-<h3 id="orgheadline29">Algebraic Structures in Big Data</h3>
+<section id="slide-orgheadline25">
+<h3 id="orgheadline25">Algebraic Structures in Big Data</h3>
 <ul>
 <li class="fragment appear">monoids and semigroups are the key to parallelism</li>
 <li class="fragment appear">the ability to combine "summary data"</li>
@@ -779,17 +660,15 @@ training on data set combinations.
 </section>
 </section>
 <section>
-<section id="slide-orgheadline46">
-<h2 id="orgheadline46">Part 3</h2>
+<section id="slide-orgheadline42">
+<h2 id="orgheadline42">Part 3</h2>
 <p>
 Nonlinear Structures
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline31">
-<h3 id="orgheadline31"><code>accumulate</code> Works on Linear Sequences</h3>
+<section id="slide-orgheadline27">
+<h3 id="orgheadline27"><code>accumulate</code> Works on Linear Sequences</h3>
 <p>
 How would we make it work on multi-dimensional structures?
 </p>
@@ -805,10 +684,8 @@ What if it's a bit more complex? (Like say, a JSON object?)
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline32">
-<h3 id="orgheadline32">Recall <code>std::accumulate</code></h3>
+<section id="slide-orgheadline28">
+<h3 id="orgheadline28">Recall <code>std::accumulate</code></h3>
 <br/>
 <div class="org-src-container">
 
@@ -834,10 +711,8 @@ The insight here is that we really have two things we're dealing with.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline33">
-<h3 id="orgheadline33">Recursive Definition of a <code>vector</code></h3>
+<section id="slide-orgheadline29">
+<h3 id="orgheadline29">Recursive Definition of a <code>vector</code></h3>
 <p>
 We can view "sequence accumulation" as handling two cases:
 </p>
@@ -859,10 +734,8 @@ The insight, explained.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline34">
-<h3 id="orgheadline34"><code>std::accumulate</code> Viewed Recursively</h3>
+<section id="slide-orgheadline30">
+<h3 id="orgheadline30"><code>std::accumulate</code> Viewed Recursively</h3>
 <br/>
 <div class="org-src-container">
 
@@ -892,10 +765,8 @@ sum types.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline35">
-<h3 id="orgheadline35">Accumulating a <code>variant</code></h3>
+<section id="slide-orgheadline31">
+<h3 id="orgheadline31">Accumulating a <code>variant</code></h3>
 <br/>
 <div class="org-src-container">
 
@@ -929,10 +800,8 @@ Wrapper provides for recursion. With implicit conversion to a value.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline36">
-<h3 id="orgheadline36">Example: Render a <code>JSONValue</code> as a <code>string</code></h3>
+<section id="slide-orgheadline32">
+<h3 id="orgheadline32">Example: Render a <code>JSONValue</code> as a <code>string</code></h3>
 <p>
 We need a function for each distinct type that can be inside the <code>variant</code>.
 </p>
@@ -953,10 +822,8 @@ We need a function for each distinct type that can be inside the <code>variant</
 </div>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline37">
-<h3 id="orgheadline37">Example: Render a <code>JSONValue</code> as a <code>string</code></h3>
+<section id="slide-orgheadline33">
+<h3 id="orgheadline33">Example: Render a <code>JSONValue</code> as a <code>string</code></h3>
 <p>
 We need a function for each distinct type that can be inside the <code>variant</code>.
 </p>
@@ -975,10 +842,8 @@ We need a function for each distinct type that can be inside the <code>variant</
 </div>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline38">
-<h3 id="orgheadline38">Example: Render a <code>JSONValue</code> as a <code>string</code></h3>
+<section id="slide-orgheadline34">
+<h3 id="orgheadline34">Example: Render a <code>JSONValue</code> as a <code>string</code></h3>
 <p>
 We need a function for each distinct type that can be inside the <code>variant</code>.
 </p>
@@ -998,10 +863,8 @@ We need a function for each distinct type that can be inside the <code>variant</
 </div>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline39">
-<h3 id="orgheadline39">Example: Render a <code>JSONValue</code> as a <code>string</code></h3>
+<section id="slide-orgheadline35">
+<h3 id="orgheadline35">Example: Render a <code>JSONValue</code> as a <code>string</code></h3>
 <p>
 We need a function for each distinct type that can be inside the <code>variant</code>.
 </p>
@@ -1032,10 +895,8 @@ OK, now we'll go through one way to write fold.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline40">
-<h3 id="orgheadline40">A Generic <code>fold</code> for <code>variant</code></h3>
+<section id="slide-orgheadline36">
+<h3 id="orgheadline36">A Generic <code>fold</code> for <code>variant</code></h3>
 <br/>
 <div class="org-src-container">
 
@@ -1044,9 +905,9 @@ OK, now we'll go through one way to write fold.
 <span style="color: #707183;">{</span>
   static_assert<span style="color: #7388d6;">(</span><span style="color: #a020f0;">sizeof</span>...<span style="color: #909183;">(</span>Ts<span style="color: #909183;">)</span> == <span style="color: #a020f0;">sizeof</span>...<span style="color: #909183;">(</span>Fs<span style="color: #909183;">)</span>,
                 <span style="color: #b22222;">"Not enough functions provided to variant fold"</span><span style="color: #7388d6;">)</span>;
-  <span style="color: #a020f0;">return</span> <span style="color: #008b8b;">fold_at</span><span style="color: #7388d6;">&lt;</span><span style="color: #008b8b;">0</span>, <span style="color: #a020f0;">sizeof</span>...<span style="color: #909183;">(</span>Ts<span style="color: #909183;">)</span><span style="color: #7388d6;">&gt;</span>::apply<span style="color: #7388d6;">(</span>
+  <span style="color: #a020f0;">return</span> fold_at<span style="color: #7388d6;">(</span>
       v, v.index<span style="color: #909183;">()</span>,
-      <span style="color: #008b8b;">std</span>::forward<span style="color: #909183;">&lt;</span><span style="color: #228b22;">Fs</span><span style="color: #909183;">&gt;(</span>fs<span style="color: #909183;">)</span>...<span style="color: #7388d6;">)</span>;
+      forward<span style="color: #909183;">&lt;</span><span style="color: #228b22;">Fs</span><span style="color: #909183;">&gt;(</span>fs<span style="color: #909183;">)</span>...<span style="color: #7388d6;">)</span>;
 <span style="color: #707183;">}</span>
 </pre>
 </div>
@@ -1066,10 +927,8 @@ Recall that the "zero value" is implicit in the functions if required.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline41">
-<h3 id="orgheadline41">A Generic <code>fold</code> for <code>variant</code></h3>
+<section id="slide-orgheadline37">
+<h3 id="orgheadline37">A Generic <code>fold</code> for <code>variant</code></h3>
 <br/>
 <div class="org-src-container">
 
@@ -1078,19 +937,17 @@ Recall that the "zero value" is implicit in the functions if required.
 <span style="color: #707183;">{</span>
   <span style="color: #a020f0;">using</span> <span style="color: #228b22;">R</span> = <span style="color: #a020f0;">decltype</span><span style="color: #7388d6;">(</span>f<span style="color: #909183;">(</span>get<span style="color: #709870;">&lt;</span><span style="color: #008b8b;">0</span><span style="color: #709870;">&gt;(</span>t<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>;
   <span style="color: #a020f0;">return</span> <span style="color: #008b8b;">apply_at</span><span style="color: #7388d6;">&lt;</span><span style="color: #008b8b;">0</span>, <span style="color: #a020f0;">sizeof</span>...<span style="color: #909183;">(</span><span style="color: #228b22;">Fs</span><span style="color: #909183;">)</span>+<span style="color: #008b8b;">1</span><span style="color: #7388d6;">&gt;</span>::<span style="color: #a020f0;">template</span> apply<span style="color: #7388d6;">&lt;</span><span style="color: #228b22;">R</span>, <span style="color: #228b22;">T</span>, F, <span style="color: #228b22;">Fs</span>...<span style="color: #7388d6;">&gt;(</span>
-      <span style="color: #008b8b;">std</span>::forward<span style="color: #909183;">&lt;</span><span style="color: #228b22;">T</span><span style="color: #909183;">&gt;(</span>t<span style="color: #909183;">)</span>,
+      forward<span style="color: #909183;">&lt;</span><span style="color: #228b22;">T</span><span style="color: #909183;">&gt;(</span>t<span style="color: #909183;">)</span>,
       n,
-      <span style="color: #008b8b;">std</span>::forward<span style="color: #909183;">&lt;</span>F<span style="color: #909183;">&gt;(</span>f<span style="color: #909183;">)</span>,
-      <span style="color: #008b8b;">std</span>::forward<span style="color: #909183;">&lt;</span><span style="color: #228b22;">Fs</span><span style="color: #909183;">&gt;(</span>fs<span style="color: #909183;">)</span>...<span style="color: #7388d6;">)</span>;
+      forward<span style="color: #909183;">&lt;</span>F<span style="color: #909183;">&gt;(</span>f<span style="color: #909183;">)</span>,
+      forward<span style="color: #909183;">&lt;</span><span style="color: #228b22;">Fs</span><span style="color: #909183;">&gt;(</span>fs<span style="color: #909183;">)</span>...<span style="color: #7388d6;">)</span>;
 <span style="color: #707183;">}</span>
 </pre>
 </div>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline42">
-<h3 id="orgheadline42">A Generic <code>fold</code> for <code>variant</code></h3>
+<section id="slide-orgheadline38">
+<h3 id="orgheadline38">A Generic <code>fold</code> for <code>variant</code></h3>
 <br/>
 <div class="org-src-container">
 
@@ -1101,12 +958,12 @@ Recall that the "zero value" is implicit in the functions if required.
   <span style="color: #a020f0;">static</span> <span style="color: #a020f0;">auto</span> <span style="color: #0000ff;">apply</span><span style="color: #7388d6;">(</span><span style="color: #228b22;">T</span>&amp;&amp; <span style="color: #a0522d;">t</span>, <span style="color: #228b22;">size_t</span> <span style="color: #a0522d;">n</span>, <span style="color: #228b22;">F</span>&amp;&amp; <span style="color: #a0522d;">f</span>, <span style="color: #228b22;">Fs</span>&amp;&amp;... fs<span style="color: #7388d6;">)</span>
   <span style="color: #7388d6;">{</span>
     <span style="color: #a020f0;">if</span> <span style="color: #909183;">(</span>n == N<span style="color: #909183;">)</span>
-      <span style="color: #a020f0;">return</span> <span style="color: #008b8b;">std</span>::forward<span style="color: #909183;">&lt;</span>F<span style="color: #909183;">&gt;(</span>f<span style="color: #909183;">)(</span>get<span style="color: #709870;">&lt;</span>N<span style="color: #709870;">&gt;(</span><span style="color: #008b8b;">std</span>::<span style="color: #a0522d;">forward</span><span style="color: #907373;">&lt;</span><span style="color: #228b22;">T</span><span style="color: #907373;">&gt;(</span><span style="color: #a0522d;">t</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span>;
+      <span style="color: #a020f0;">return</span> forward<span style="color: #909183;">&lt;</span>F<span style="color: #909183;">&gt;(</span>f<span style="color: #909183;">)(</span>get<span style="color: #709870;">&lt;</span>N<span style="color: #709870;">&gt;(</span><span style="color: #a0522d;">forward</span><span style="color: #907373;">&lt;</span><span style="color: #228b22;">T</span><span style="color: #907373;">&gt;(</span>t<span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span>;
     <span style="color: #a020f0;">else</span>
       <span style="color: #a020f0;">return</span> <span style="color: #008b8b;">apply_at</span><span style="color: #909183;">&lt;</span>N+<span style="color: #008b8b;">1</span>, Max<span style="color: #909183;">&gt;</span>::<span style="color: #a020f0;">template</span> apply<span style="color: #909183;">&lt;</span><span style="color: #228b22;">R</span>, <span style="color: #228b22;">T</span>, <span style="color: #228b22;">Fs</span>...<span style="color: #909183;">&gt;(</span>
-          <span style="color: #008b8b;">std</span>::forward<span style="color: #709870;">&lt;</span><span style="color: #228b22;">T</span><span style="color: #709870;">&gt;(</span><span style="color: #a0522d;">t</span><span style="color: #709870;">)</span>,
+          forward<span style="color: #709870;">&lt;</span><span style="color: #228b22;">T</span><span style="color: #709870;">&gt;(</span><span style="color: #a0522d;">t</span><span style="color: #709870;">)</span>,
           n,
-          <span style="color: #008b8b;">std</span>::forward<span style="color: #709870;">&lt;</span><span style="color: #228b22;">Fs</span><span style="color: #709870;">&gt;(</span><span style="color: #a0522d;">fs</span><span style="color: #709870;">)</span>...<span style="color: #909183;">)</span>;
+          forward<span style="color: #709870;">&lt;</span><span style="color: #228b22;">Fs</span><span style="color: #709870;">&gt;(</span><span style="color: #a0522d;">fs</span><span style="color: #709870;">)</span>...<span style="color: #909183;">)</span>;
   <span style="color: #7388d6;">}</span>
 <span style="color: #707183;">}</span>;
 </pre>
@@ -1120,10 +977,8 @@ A recursive template. Louis could probably do better&#x2026;
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline43">
-<h3 id="orgheadline43">A Generic <code>fold</code> for <code>variant</code></h3>
+<section id="slide-orgheadline39">
+<h3 id="orgheadline39">A Generic <code>fold</code> for <code>variant</code></h3>
 <br/>
 <div class="org-src-container">
 
@@ -1152,10 +1007,8 @@ But it's required to compile and terminate the type recursion.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline44">
-<h3 id="orgheadline44">Generic <code>variant</code> accumulation</h3>
+<section id="slide-orgheadline40">
+<h3 id="orgheadline40">Generic <code>variant</code> accumulation</h3>
 <br/>
 <div class="org-src-container">
 
@@ -1176,10 +1029,8 @@ class that implements a function for each type in the variant.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline45">
-<h3 id="orgheadline45">Recursive reduction</h3>
+<section id="slide-orgheadline41">
+<h3 id="orgheadline41">Recursive reduction</h3>
 <p>
 Any recursively-specified data structure can be accumulated using visitation to
 produce a monoidal value which is accumulated
@@ -1200,17 +1051,15 @@ is difficult to define a linear traversal for.
 </section>
 </section>
 <section>
-<section id="slide-orgheadline53">
-<h2 id="orgheadline53">Part 4</h2>
+<section id="slide-orgheadline49">
+<h2 id="orgheadline49">Part 4</h2>
 <p>
 Heterogeneous Sequences
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline47">
-<h3 id="orgheadline47">Beyond Monoids</h3>
+<section id="slide-orgheadline43">
+<h3 id="orgheadline43">Beyond Monoids</h3>
 <br/>
 <div class="org-src-container">
 
@@ -1227,10 +1076,8 @@ values of <code>Type2</code> into values of <code>Type1</code>.
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline48">
-<h3 id="orgheadline48">Heterogeneous Folding</h3>
+<section id="slide-orgheadline44">
+<h3 id="orgheadline44">Heterogeneous Folding</h3>
 <br/>
 <div class="org-src-container">
 
@@ -1251,10 +1098,8 @@ There is one obvious example of this that is almost ubiquitous.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline49">
-<h3 id="orgheadline49">The Obvious Example</h3>
+<section id="slide-orgheadline45">
+<h3 id="orgheadline45">The Obvious Example</h3>
 <br/>
 <div class="org-src-container">
 
@@ -1264,14 +1109,12 @@ There is one obvious example of this that is almost ubiquitous.
 </div>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline50">
-<h3 id="orgheadline50">The Obvious Example</h3>
+<section id="slide-orgheadline46">
+<h3 id="orgheadline46">The Obvious Example</h3>
 <br/>
 <div class="org-src-container">
 
-<pre  class="src src-cpp"><span style="color: #a020f0;">auto</span> <span style="color: #a0522d;">t</span> = make_tuple<span style="color: #707183;">(</span><span style="color: #b22222;">"Hello"</span>, <span style="color: #008b8b;">3</span>.<span style="color: #008b8b;">14</span>, <span style="color: #008b8b;">1729</span>, <span style="color: #b22222;">'a'</span><span style="color: #707183;">)</span>;
+<pre  class="src src-cpp"><span style="color: #a020f0;">auto</span> <span style="color: #a0522d;">t</span> = make_tuple<span style="color: #707183;">(</span><span style="color: #b22222;">"Hello"</span>, <span style="color: #008b8b;">3.14</span>, <span style="color: #008b8b;">1729</span>, <span style="color: #b22222;">'a'</span><span style="color: #707183;">)</span>;
 <span style="color: #a020f0;">auto</span> <span style="color: #a0522d;">f</span> = <span style="color: #707183;">[]</span> <span style="color: #707183;">(</span><span style="color: #228b22;">ostream</span>&amp; <span style="color: #a0522d;">s</span>, <span style="color: #a020f0;">const</span> <span style="color: #a020f0;">auto</span>&amp; <span style="color: #a0522d;">x</span><span style="color: #707183;">)</span> -&gt; ostream&amp; <span style="color: #707183;">{</span>
   <span style="color: #a020f0;">return</span> s &lt;&lt; x &lt;&lt; <span style="color: #b22222;">'</span><span style="color: #b22222; font-weight: bold;">\</span><span style="color: #b22222; font-weight: bold;">n</span><span style="color: #b22222;">'</span>;
 <span style="color: #707183;">}</span>;
@@ -1308,10 +1151,8 @@ We could have structured the function to take a monostate sentinel for the
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline51">
-<h3 id="orgheadline51">Heterogeneous Folding</h3>
+<section id="slide-orgheadline47">
+<h3 id="orgheadline47">Heterogeneous Folding</h3>
 <br/>
 <div class="org-src-container">
 
@@ -1331,24 +1172,17 @@ Not too difficult, but it takes some trickiness to deal with nonmovable types li
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline52">
-<h3 id="orgheadline52">Different Types of Accumulation</h3>
+<section id="slide-orgheadline48">
+<h3 id="orgheadline48">Different Types of Accumulation</h3>
 <ul>
-<li class="fragment appear">std::accumulate
+<li class="fragment appear"><code>accumulate</code>
 <ul>
 <li>1 function, linear homogeneous structure</li>
 
 </ul></li>
-<li class="fragment appear">std::accumulate with linear tree traversal
+<li class="fragment appear"><code>accumulate</code> with linear tree traversal
 <ul>
 <li>1 function, multidimensional homogeneous structure</li>
-
-</ul></li>
-<li class="fragment appear">tuple-fold
-<ul>
-<li>n functions, linear heterogeneous structure</li>
 
 </ul></li>
 <li class="fragment appear">variant-fold
@@ -1356,28 +1190,31 @@ Not too difficult, but it takes some trickiness to deal with nonmovable types li
 <li>n functions, multidimensional heterogeneous structure</li>
 
 </ul></li>
+<li class="fragment appear">tuple-fold
+<ul>
+<li>n functions, linear heterogeneous structure</li>
+
+</ul></li>
 
 </ul>
 
 <p class="fragment appear">
 The empire so far&#x2026; all of these could also be parallel, given the appropriate
-monoidal structure.
+monoidal (or semigroup) structure.
 </p>
 
 </section>
 </section>
 <section>
-<section id="slide-orgheadline64">
-<h2 id="orgheadline64">Part 5</h2>
+<section id="slide-orgheadline60">
+<h2 id="orgheadline60">Part 5</h2>
 <p>
 The Opposite of Accumulate?
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline54">
-<h3 id="orgheadline54">Fold? Unfold</h3>
+<section id="slide-orgheadline50">
+<h3 id="orgheadline50">Fold? Unfold</h3>
 <p>
 If <code>accumulate</code> is folding up a data structure to produce a value&#x2026;
 </p>
@@ -1386,10 +1223,8 @@ The opposite is "unfolding" a seed value to produce a data structure.
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline55">
-<h3 id="orgheadline55">How To Unfold</h3>
+<section id="slide-orgheadline51">
+<h3 id="orgheadline51">How To Unfold</h3>
 <br/>
 <div class="org-src-container">
 
@@ -1412,10 +1247,8 @@ to <code>it</code>.
 </ul>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline56">
-<h3 id="orgheadline56">Signature of the Function Passed to <code>unfold</code></h3>
+<section id="slide-orgheadline52">
+<h3 id="orgheadline52">Signature of the Function Passed to <code>unfold</code></h3>
 <p>
 F is the opposite of <code>accumulate</code>'s BinaryOp
 </p>
@@ -1439,16 +1272,14 @@ values.
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline57">
-<h3 id="orgheadline57">Three Choices for <code>unfold</code> Termination</h3>
+<section id="slide-orgheadline53">
+<h3 id="orgheadline53">Three Choices for <code>unfold</code> Termination</h3>
 <br/>
 <div class="org-src-container">
 
 <pre  class="src src-cpp"><span style="color: #bebebe;">// </span><span style="color: #bebebe;">1. provide a sentinel value of type T</span>
-<span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">typename</span> <span style="color: #228b22;">FwdIt</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">F</span><span style="color: #707183;">&gt;</span>
-<span style="color: #228b22;">FwdIt</span> <span style="color: #0000ff;">unfold</span><span style="color: #707183;">(</span><span style="color: #228b22;">F</span> <span style="color: #a0522d;">f</span>, <span style="color: #228b22;">FwdIt</span> <span style="color: #a0522d;">it</span>, <span style="color: #228b22;">T</span> <span style="color: #a0522d;">init</span>, <span style="color: #228b22;">T</span> <span style="color: #a0522d;">term</span><span style="color: #707183;">)</span>;
+<span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">typename</span> <span style="color: #228b22;">OutputIt</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">F</span><span style="color: #707183;">&gt;</span>
+<span style="color: #228b22;">OutputIt</span> <span style="color: #0000ff;">unfold</span><span style="color: #707183;">(</span><span style="color: #228b22;">F</span> <span style="color: #a0522d;">f</span>, <span style="color: #228b22;">OutputIt</span> <span style="color: #a0522d;">it</span>, <span style="color: #228b22;">T</span> <span style="color: #a0522d;">init</span>, <span style="color: #228b22;">T</span> <span style="color: #a0522d;">term</span><span style="color: #707183;">)</span>;
 </pre>
 </div>
 <p>
@@ -1456,16 +1287,14 @@ Choice 1: terminate when a termination value (of type <code>T</code>) is returne
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline58">
-<h3 id="orgheadline58">Three Choices for <code>unfold</code> Termination</h3>
+<section id="slide-orgheadline54">
+<h3 id="orgheadline54">Three Choices for <code>unfold</code> Termination</h3>
 <br/>
 <div class="org-src-container">
 
 <pre  class="src src-cpp"><span style="color: #bebebe;">// </span><span style="color: #bebebe;">2. provide a sentinel value of type (other thing returned by F)</span>
-<span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">typename</span> <span style="color: #228b22;">FwdIt</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">F</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">U</span><span style="color: #707183;">&gt;</span>
-<span style="color: #228b22;">FwdIt</span> <span style="color: #0000ff;">unfold</span><span style="color: #707183;">(</span><span style="color: #228b22;">F</span> <span style="color: #a0522d;">f</span>, <span style="color: #228b22;">FwdIt</span> <span style="color: #a0522d;">it</span>, <span style="color: #228b22;">T</span> <span style="color: #a0522d;">init</span>, <span style="color: #228b22;">U</span> <span style="color: #a0522d;">term</span><span style="color: #707183;">)</span>;
+<span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">typename</span> <span style="color: #228b22;">OutputIt</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">F</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">U</span><span style="color: #707183;">&gt;</span>
+<span style="color: #228b22;">OutputIt</span> <span style="color: #0000ff;">unfold</span><span style="color: #707183;">(</span><span style="color: #228b22;">F</span> <span style="color: #a0522d;">f</span>, <span style="color: #228b22;">OutputIt</span> <span style="color: #a0522d;">it</span>, <span style="color: #228b22;">T</span> <span style="color: #a0522d;">init</span>, <span style="color: #228b22;">U</span> <span style="color: #a0522d;">term</span><span style="color: #707183;">)</span>;
 </pre>
 </div>
 <p>
@@ -1481,16 +1310,14 @@ type: either in the first element or the second element of the returned pair.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline59">
-<h3 id="orgheadline59">Three Choices for <code>unfold</code> Termination</h3>
+<section id="slide-orgheadline55">
+<h3 id="orgheadline55">Three Choices for <code>unfold</code> Termination</h3>
 <br/>
 <div class="org-src-container">
 
 <pre  class="src src-cpp"><span style="color: #bebebe;">// </span><span style="color: #bebebe;">3. F will return an optional</span>
-<span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">typename</span> <span style="color: #228b22;">FwdIt</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">F</span><span style="color: #707183;">&gt;</span>
-<span style="color: #228b22;">FwdIt</span> <span style="color: #0000ff;">unfold</span><span style="color: #707183;">(</span><span style="color: #228b22;">F</span> <span style="color: #a0522d;">f</span>, <span style="color: #228b22;">FwdIt</span> <span style="color: #a0522d;">it</span>, <span style="color: #228b22;">T</span> <span style="color: #a0522d;">init</span><span style="color: #707183;">)</span>;
+<span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">typename</span> <span style="color: #228b22;">OutputIt</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">F</span><span style="color: #707183;">&gt;</span>
+<span style="color: #228b22;">OutputIt</span> <span style="color: #0000ff;">unfold</span><span style="color: #707183;">(</span><span style="color: #228b22;">F</span> <span style="color: #a0522d;">f</span>, <span style="color: #228b22;">OutputIt</span> <span style="color: #a0522d;">it</span>, <span style="color: #228b22;">T</span> <span style="color: #a0522d;">init</span><span style="color: #707183;">)</span>;
 </pre>
 </div>
 <p>
@@ -1505,19 +1332,17 @@ optional is made for sentinel values!
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline60">
-<h3 id="orgheadline60">How To Unfold</h3>
+<section id="slide-orgheadline56">
+<h3 id="orgheadline56">How To Unfold</h3>
 <br/>
 <div class="org-src-container">
 
-<pre  class="src src-cpp"><span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">typename</span> <span style="color: #228b22;">FwdIt</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">F</span><span style="color: #707183;">&gt;</span>
-<span style="color: #228b22;">FwdIt</span> <span style="color: #0000ff;">unfold</span><span style="color: #707183;">(</span><span style="color: #228b22;">F</span> <span style="color: #a0522d;">f</span>, <span style="color: #228b22;">FwdIt</span> <span style="color: #a0522d;">it</span>, <span style="color: #228b22;">T</span> <span style="color: #a0522d;">init</span><span style="color: #707183;">)</span>
+<pre  class="src src-cpp"><span style="color: #a020f0;">template</span> <span style="color: #707183;">&lt;</span><span style="color: #a020f0;">typename</span> <span style="color: #228b22;">OutputIt</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">T</span>, <span style="color: #a020f0;">typename</span> <span style="color: #228b22;">F</span><span style="color: #707183;">&gt;</span>
+<span style="color: #228b22;">OutputIt</span> <span style="color: #0000ff;">unfold</span><span style="color: #707183;">(</span><span style="color: #228b22;">F</span> <span style="color: #a0522d;">f</span>, <span style="color: #228b22;">OutputIt</span> <span style="color: #a0522d;">it</span>, <span style="color: #228b22;">T</span>&amp;&amp; <span style="color: #a0522d;">init</span><span style="color: #707183;">)</span>
 <span style="color: #707183;">{</span>
-  <span style="color: #228b22;">T</span> <span style="color: #a0522d;">t</span><span style="color: #7388d6;">{</span><span style="color: #008b8b;">std</span>::forward<span style="color: #909183;">&lt;</span><span style="color: #228b22;">T</span><span style="color: #909183;">&gt;(</span>init<span style="color: #909183;">)</span><span style="color: #7388d6;">}</span>;
-  <span style="color: #a020f0;">for</span> <span style="color: #7388d6;">(</span><span style="color: #a020f0;">auto</span> <span style="color: #a0522d;">o</span> = f<span style="color: #909183;">(</span>t<span style="color: #909183;">)</span>; o; o = f<span style="color: #909183;">(</span>o-&gt;second<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span> <span style="color: #7388d6;">{</span>
-    it = <span style="color: #008b8b;">std</span>::move<span style="color: #909183;">(</span><span style="color: #008b8b;">std</span>::begin<span style="color: #709870;">(</span>o-&gt;first<span style="color: #709870;">)</span>, <span style="color: #008b8b;">std</span>::end<span style="color: #709870;">(</span>o-&gt;first<span style="color: #709870;">)</span>, it<span style="color: #909183;">)</span>;
+  <span style="color: #a020f0;">for</span> <span style="color: #7388d6;">(</span><span style="color: #a020f0;">auto</span> <span style="color: #a0522d;">o</span> = f<span style="color: #909183;">(</span>forward<span style="color: #709870;">&lt;</span><span style="color: #228b22;">T</span><span style="color: #709870;">&gt;(</span>init<span style="color: #709870;">)</span><span style="color: #909183;">)</span>; o;
+       o = f<span style="color: #909183;">(</span>move<span style="color: #709870;">(</span>o-&gt;second<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span> <span style="color: #7388d6;">{</span>
+    it = move<span style="color: #909183;">(</span>begin<span style="color: #709870;">(</span>o-&gt;first<span style="color: #709870;">)</span>, end<span style="color: #709870;">(</span>o-&gt;first<span style="color: #709870;">)</span>, it<span style="color: #909183;">)</span>;
   <span style="color: #7388d6;">}</span>
   <span style="color: #a020f0;">return</span> it;
 <span style="color: #707183;">}</span>
@@ -1536,10 +1361,8 @@ value (although it may be a singleton range)
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline61">
-<h3 id="orgheadline61">Unfold Example</h3>
+<section id="slide-orgheadline57">
+<h3 id="orgheadline57">Unfold Example</h3>
 <div class="org-src-container">
 
 <pre  class="src src-cpp"><span class="linenr"> 1: </span><span style="color: #228b22;">optional</span><span style="color: #707183;">&lt;</span><span style="color: #228b22;">pair</span><span style="color: #7388d6;">&lt;</span><span style="color: #228b22;">string</span>, <span style="color: #228b22;">int</span><span style="color: #7388d6;">&gt;</span><span style="color: #707183;">&gt;</span> <span style="color: #0000ff;">to_roman</span><span style="color: #707183;">(</span><span style="color: #228b22;">int</span> <span style="color: #a0522d;">n</span><span style="color: #707183;">)</span>
@@ -1570,10 +1393,8 @@ A simple example. This function is quite easy to write?
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline62">
-<h3 id="orgheadline62">Unfold Example</h3>
+<section id="slide-orgheadline58">
+<h3 id="orgheadline58">Unfold Example</h3>
 <br/>
 <div class="org-src-container">
 
@@ -1601,10 +1422,8 @@ Iterating to<sub>roman</sub> gives us the expected result.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline63">
-<h3 id="orgheadline63">Fold and Unfold are Really the Same</h3>
+<section id="slide-orgheadline59">
+<h3 id="orgheadline59">Fold and Unfold are Really the Same</h3>
 <p>
 Just transformations on a data structure.
 </p>
@@ -1629,17 +1448,15 @@ Compare <code>generate</code>, <code>generate_n</code>
 </section>
 </section>
 <section>
-<section id="slide-orgheadline74">
-<h2 id="orgheadline74">Postscript</h2>
+<section id="slide-orgheadline70">
+<h2 id="orgheadline70">Postscript</h2>
 <p>
 The Fruits of Algorithmic Perversions
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline65">
-<h3 id="orgheadline65">The Question</h3>
+<section id="slide-orgheadline61">
+<h3 id="orgheadline61">The Question</h3>
 <p>
 If you were stuck on a desert island, which algorithms would you take with you?
 </p>
@@ -1663,10 +1480,8 @@ What if you couldn't write any loops, so you're stuck with what you have?
 </p>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline66">
-<h3 id="orgheadline66">The Algorithms (pre-C++17)</h3>
+<section id="slide-orgheadline62">
+<h3 id="orgheadline62">The Algorithms (pre-C++17)</h3>
 <div id="columns"> <div id="fiveup">
 <ul>
 <li><code>accumulate</code></li>
@@ -1791,10 +1606,8 @@ The rest!
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline67">
-<h3 id="orgheadline67">Why Doesn't <code>accumulate</code> Work on Iterators?</h3>
+<section id="slide-orgheadline63">
+<h3 id="orgheadline63">Why Doesn't <code>accumulate</code> Work on Iterators?</h3>
 <br/>
 <div class="org-src-container">
 
@@ -1809,6 +1622,9 @@ The rest!
 <span style="color: #707183;">}</span>
 </pre>
 </div>
+<p>
+The function receives a value rather than an iterator&#x2026;
+</p>
 
 <aside class="notes">
 <p>
@@ -1818,10 +1634,8 @@ It does work on iterators, doesn't it?
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline68">
-<h3 id="orgheadline68">Why Doesn't <code>accumulate</code> Work on Iterators?</h3>
+<section id="slide-orgheadline64">
+<h3 id="orgheadline64">Why Doesn't <code>accumulate</code> Work on Iterators?</h3>
 <br/>
 <div class="org-src-container">
 
@@ -1848,10 +1662,8 @@ Pass iterator to op rather than value to op: allows accumulating an iterator.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline69">
-<h3 id="orgheadline69">Accumulate abuse</h3>
+<section id="slide-orgheadline65">
+<h3 id="orgheadline65">Abusing <code>accumulate</code></h3>
 <p>
 I'm the first to admit that some of these algorithm implementations are&#x2026;
 interesting.
@@ -1864,10 +1676,8 @@ interesting.
 </ul>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline70">
-<h3 id="orgheadline70">But&#x2026;</h3>
+<section id="slide-orgheadline66">
+<h3 id="orgheadline66">But&#x2026;</h3>
 <p>
 Some interesting alternatives arise.
 </p>
@@ -1892,10 +1702,8 @@ algorithms. P0227 Weakening the iterator categories of some standard algorithms.
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline71">
-<h3 id="orgheadline71">Hunting for (Raw?) Loops, Redux</h3>
+<section id="slide-orgheadline67">
+<h3 id="orgheadline67">Hunting for (Raw?) Loops, Redux</h3>
 <p>
 Almost everything can be expressed as some form of accumulation.
 </p>
@@ -1920,18 +1728,13 @@ Watch out for: copies
 </aside>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline72">
-<h3 id="orgheadline72">Some Further Reading</h3>
+<section id="slide-orgheadline68">
+<h3 id="orgheadline68">Some Further Reading</h3>
 <ul>
-<li><a href="http://www.amazon.com/exec/obidos/ASIN/032163537X/ref=nosim/elbenocom-20">Elements of Progamming</a></li>
 <li><a href="https://wiki.haskell.org/Fold">Fold (Haskell Wiki)</a></li>
 <li><a href="http://blog.sumtypeofway.com/an-introduction-to-recursion-schemes/">An Introduction to Recursion Schemes</a></li>
 <li><a href="https://izbicki.me/blog/gausian-distributions-are-monoids">Gaussian Distributions form a Monoid</a></li>
-<li><a href="https://github.com/twitter/algebird">Algebird</a> / <a href="https://github.com/mikeizbicki/HLearn">HLearn</a></li>
 <li><a href="https://www.infoq.com/presentations/abstract-algebra-analytics">Add ALL the Things: Abstract Algebra Meets Analytics</a></li>
-
 <li>Variant folding code
 <ul>
 <li><a href="https://gist.github.com/elbeno/e5c333fff247e78990e08ab8ed56aecd">https://gist.github.com/elbeno/e5c333fff247e78990e08ab8ed56aecd</a></li>
@@ -1946,20 +1749,18 @@ Watch out for: copies
 </ul>
 
 </section>
-</section>
-<section>
-<section id="slide-orgheadline73">
-<h3 id="orgheadline73">Summary</h3>
+<section id="slide-orgheadline69">
+<h3 id="orgheadline69">Summary</h3>
 <ul>
-<li class="fragment appear">Any time you write an API, see if any of your data types form a monoid or a
+<li>Any time you write an API, see if any of your data types form a monoid or a
 semigroup under any operations you provide.</li>
-<li class="fragment appear">Look for opportunities where you are applying a function in a loop.</li>
-<li class="fragment appear">Monoids are everywhere.</li>
-<li class="fragment appear">Think about folding with multidimensional structures or heterogeneous sequences.</li>
-<li class="fragment appear">Unfolds are an alternative way to think of things; can be combined with folds
+<li>Look for opportunities where you are applying a function in a loop.</li>
+<li>Monoids are everywhere.</li>
+<li>Think about folding with multidimensional structures or heterogeneous sequences.</li>
+<li>Unfolds are an alternative way to think of things; can be combined with folds
 to produce arbitrary structural transformations.</li>
-<li class="fragment appear">Algorithmic perversions can be fruitful in terms of learning&#x2026;</li>
-<li class="fragment appear">Accumulation: not just for adding things up!</li>
+<li>Algorithmic perversions can be fruitful in terms of learning&#x2026;</li>
+<li>Accumulation: not just for adding things up!</li>
 
 </ul>
 </section>
@@ -1989,7 +1790,7 @@ minScale: 0.50,
 maxScale: 2.50,
 
 theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-transition: Reveal.getQueryHash().transition || 'slide', // default/cube/page/concave/zoom/linear/fade/none
+transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
 transitionSpeed: 'default',
 multiplex: {
     secret: '', // null if client

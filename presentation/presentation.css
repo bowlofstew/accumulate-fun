@@ -7,6 +7,11 @@
 
 .reveal code {
     font-family: Inconsolata;
+    text-transform: initial;
+}
+
+.reveal a {
+    text-transform: initial;
 }
 
 .reveal pre {
@@ -25,7 +30,7 @@
   overflow:hidden;
 }
 #columns li {
-    height: 30px;
+    height: 32px;
   float:left;
   display:inline;
 }
